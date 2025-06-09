@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P.I.D.R. - Настройка игры</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/game-setup.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Заголовок -->
+        <h1 class="section-title">Настройка игры</h1>
+
+        <!-- Количество игроков -->
+        <div class="setup-section">
+            <h2 class="section-subtitle">Количество игроков</h2>
+            <div class="player-count">
+                <button class="btn-circle" onclick="decrementPlayers()">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <div class="count-display">
+                    <span id="playerCount">2</span>
+                    <small>игрока</small>
+                </div>
+                <button class="btn-circle" onclick="incrementPlayers()">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Режим игры -->
+        <div class="setup-section">
+            <h2 class="section-subtitle">Режим игры</h2>
+            <div class="game-modes">
+                <div class="mode-card active" data-mode="classic">
+                    <i class="fas fa-chess"></i>
+                    <span>Классический</span>
+                </div>
+                <div class="mode-card" data-mode="quick">
+                    <i class="fas fa-bolt"></i>
+                    <span>Быстрый</span>
+                </div>
+                <div class="mode-card" data-mode="custom">
+                    <i class="fas fa-cog"></i>
+                    <span>Свой</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Дополнительные настройки -->
+        <div class="setup-section">
+            <h2 class="section-subtitle">Дополнительно</h2>
+            <div class="settings-list">
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <span>Ограничение времени</span>
+                        <div class="toggle">
+                            <input type="checkbox" id="timeLimit">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <span>Случайные события</span>
+                        <div class="toggle">
+                            <input type="checkbox" id="randomEvents">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">
+                        <span>Бот-противник</span>
+                        <div class="toggle">
+                            <input type="checkbox" id="aiOpponent">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Кнопка начала игры -->
+        <button class="btn start-game-btn" onclick="startGame()">
+            <i class="fas fa-play"></i>
+            Начать игру
+        </button>
+    </div>
+
+    <!-- Нижняя навигация -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-gamepad"></i>
+            <span>Меню</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-users"></i>
+            <span>Друзья</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Профиль</span>
+        </a>
+        <a href="shop.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>Кошелек</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-book"></i>
+            <span>Правила</span>
+        </a>
+    </nav>
+
+    <script src="js/game-setup.js"></script>
+</body>
+</html> 

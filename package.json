@@ -1,0 +1,46 @@
+{
+  "name": "pidr-auth",
+  "version": "1.0.0",
+  "description": "Authentication system for P.I.D.R. game",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "build": "npm install"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "connect-pg-simple": "^10.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "multer": "^2.0.1",
+    "node-telegram-bot-api": "^0.64.0",
+    "passport": "^0.7.0",
+    "pg": "^8.16.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7",
+    "session-file-store": "^1.5.0",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GaryFid/card76.git"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "card",
+    "game",
+    "webapp"
+  ],
+  "author": "",
+  "license": "MIT"
+}

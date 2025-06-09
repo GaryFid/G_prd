@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P.I.D.R. - Магазин</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/shop.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="js/theme.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #fff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a4a7a 0%, #3390ec 100%);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a4a7a;
+            margin-bottom: 20px;
+        }
+
+        .shop-categories {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .category-card {
+            background: white;
+            border: 2px solid #e3eafc;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 14px;
+            color: #1a4a7a;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .category-card.active {
+            background: #1a4a7a;
+            border-color: #1a4a7a;
+            color: white;
+        }
+
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .shop-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .shop-item:hover {
+            transform: translateY(-4px);
+        }
+
+        .item-preview {
+            width: 100%;
+            height: 150px;
+            background: #f5f7fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .item-info {
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .item-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a4a7a;
+            margin-bottom: 8px;
+        }
+
+        .item-info p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .item-price {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a4a7a;
+            display: flex;
+            align-items: center;
+        }
+
+        .price-icon {
+            font-size: 16px;
+            margin-right: 4px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1a4a7a 0%, #3390ec 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 74, 122, 0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: #1a4a7a;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 480px) {
+            .shop-items {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .item-preview {
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="shop-header">
+            <h1>Магазин</h1>
+            <div class="balance-card">
+                <div class="balance-label">Ваш баланс</div>
+                <div class="balance-amount">1000 монет</div>
+            </div>
+        </div>
+
+        <div class="shop-categories">
+            <div class="shop-category active">Темы</div>
+            <div class="shop-category">Эффекты</div>
+            <div class="shop-category">Бонусы</div>
+        </div>
+
+        <div class="shop-items">
+            <!-- Темная тема -->
+            <div class="shop-item">
+                <div class="item-preview">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div class="item-details">
+                    <h3 class="item-name">Темная тема</h3>
+                    <p class="item-description">Стильный темный интерфейс для комфортной игры</p>
+                    <div class="item-footer">
+                        <div class="item-price">500 монет</div>
+                        <button class="buy-button">Купить</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Анимация карт -->
+            <div class="shop-item">
+                <div class="item-preview">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <div class="item-details">
+                    <h3 class="item-name">Анимация карт</h3>
+                    <p class="item-description">Красивые эффекты при игре с картами</p>
+                    <div class="item-footer">
+                        <div class="item-price">750 монет</div>
+                        <button class="buy-button">Купить</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Дополнительные предметы можно добавить здесь -->
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user nav-icon"></i>
+            <span>Профиль</span>
+        </a>
+        <a href="shop.html" class="nav-item active">
+            <i class="fas fa-store nav-icon"></i>
+            <span>Магазин</span>
+        </a>
+        <a href="game.html" class="nav-item">
+            <i class="fas fa-gamepad nav-icon"></i>
+            <span>Игра</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+            <i class="fas fa-cog nav-icon"></i>
+            <span>Настройки</span>
+        </a>
+    </nav>
+
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Обработчики для категорий
+        document.querySelectorAll('.shop-category').forEach(category => {
+            category.addEventListener('click', () => {
+                document.querySelector('.shop-category.active').classList.remove('active');
+                category.classList.add('active');
+                // Здесь можно добавить логику фильтрации товаров
+            });
+        });
+
+        // Обработчики для кнопок покупки
+        document.querySelectorAll('.buy-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.closest('.shop-item');
+                const itemName = item.querySelector('.item-name').textContent;
+                const itemPrice = item.querySelector('.item-price').textContent;
+                
+                // Здесь будет логика покупки
+                tg.showAlert(`Покупка "${itemName}" за ${itemPrice}`);
+            });
+        });
+    </script>
+</body>
+</html> 

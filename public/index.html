@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P.I.D.R. - Главное меню</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <button class="back-button" id="backButton">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1 class="page-title">P.I.D.R.</h1>
+        <div style="width: 24px;"></div>
+    </header>
+
+    <!-- Баланс -->
+    <div class="balance-card">
+        <div class="balance-amount">1000</div>
+        <div class="balance-label">Монет</div>
+    </div>
+
+    <!-- Категории -->
+    <h2 class="categories-title">Категории</h2>
+    <div class="categories-grid">
+        <a href="game-setup.html" class="category-card">
+            <div class="category-icon">
+                <i class="fas fa-play"></i>
+            </div>
+            <div class="category-name">Играть</div>
+        </a>
+        <a href="#" class="category-card" id="inviteFriends">
+            <div class="category-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="category-name">Пригласить</div>
+        </a>
+        <a href="shop.html" class="category-card">
+            <div class="category-icon">
+                <i class="fas fa-store"></i>
+            </div>
+            <div class="category-name">Магазин</div>
+        </a>
+    </div>
+
+    <!-- Статистика -->
+    <h2 class="products-title">Статистика</h2>
+    <div class="products-grid">
+        <div class="product-card">
+            <div class="product-title">42</div>
+            <div class="product-description">Игр сыграно</div>
+        </div>
+        <div class="product-card">
+            <div class="product-title">65%</div>
+            <div class="product-description">Процент побед</div>
+        </div>
+        <div class="product-card">
+            <div class="product-title">1234</div>
+            <div class="product-description">Рейтинг</div>
+        </div>
+    </div>
+
+    <!-- История игр -->
+    <h2 class="products-title">История игр</h2>
+    <div class="products-grid">
+        <div class="product-card">
+            <div class="product-title">Игра #42</div>
+            <div class="product-description">Победа</div>
+            <div class="product-price">
+                <i class="fas fa-plus price-icon" style="color: #4CAF50;"></i>
+                <span class="price-amount" style="color: #4CAF50;">+25</span>
+            </div>
+        </div>
+        <div class="product-card">
+            <div class="product-title">Игра #41</div>
+            <div class="product-description">Поражение</div>
+            <div class="product-price">
+                <i class="fas fa-minus price-icon" style="color: #F44336;"></i>
+                <span class="price-amount" style="color: #F44336;">-15</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Нижняя навигация -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <i class="fas fa-gamepad"></i>
+            <span>Меню</span>
+        </a>
+        <a href="friends.html" class="nav-item">
+            <i class="fas fa-users"></i>
+            <span>Друзья</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Профиль</span>
+        </a>
+        <a href="wallet.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>Кошелек</span>
+        </a>
+        <a href="rules.html" class="nav-item">
+            <i class="fas fa-book"></i>
+            <span>Правила</span>
+        </a>
+    </nav>
+
+    <script src="js/main.js"></script>
+</body>
+</html> 
