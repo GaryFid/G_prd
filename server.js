@@ -13,22 +13,22 @@ app.use(express.static('public'));
 app.use(session({
     secret: config.session.secret,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 часа
+    }
 }));
 
-// Telegram Bot
+// Инициализация бота
 let bot = null;
 if (config.telegram.enabled && config.telegram.token) {
-    const TelegramBot = require('node-telegram-bot-api');
-    bot = new TelegramBot(config.telegram.token, { polling: true });
-    bot.on('message', async (msg) => {
-        const chatId = msg.chat.id;
-        if (msg.text && msg.text.startsWith('/start auth_')) {
-            // Здесь будет логика аутентификации через Telegram
-            bot.sendMessage(chatId, 'Аутентификация через Telegram...');
-        }
-    });
-    console.log('Telegram бот успешно запущен');
+    try {
+        bot = require('./bot');
+        console.log('Telegram бот успешно запущен');
+    } catch (error) {
+        console.error('Ошибка при запуске бота:', error);
+    }
 } else {
     console.log('Telegram бот отключен');
 }
@@ -42,11 +42,12 @@ app.get('/auth/telegram', (req, res) => {
     res.redirect(`https://t.me/${config.telegram.username}?start=auth_${authToken}`);
 });
 
-// --- Новый роут для Telegram WebApp авто-добавления ---
+// Telegram WebApp авто-авторизация
 app.post('/api/telegram-auth', async (req, res) => {
     try {
         const { id, username, first_name, last_name, photo_url } = req.body;
         if (!id) return res.status(400).json({ success: false, message: 'No telegram id' });
+        
         let user = await User.findOne({ where: { telegramId: id.toString() } });
         if (!user) {
             user = await User.create({
@@ -56,10 +57,14 @@ app.post('/api/telegram-auth', async (req, res) => {
                 lastName: last_name,
                 avatar: photo_url,
                 authType: 'telegram',
-                registrationDate: new Date()
+                registrationDate: new Date(),
+                balance: 1000, // Начальный баланс
+                gamesPlayed: 0,
+                gamesWon: 0,
+                rating: 1000
             });
         } else {
-            // Обновим имя/аватар если изменились
+            // Обновим данные если изменились
             let changed = false;
             if (user.username !== (username || first_name || 'Игрок')) { user.username = username || first_name || 'Игрок'; changed = true; }
             if (user.firstName !== first_name) { user.firstName = first_name; changed = true; }
@@ -67,11 +72,27 @@ app.post('/api/telegram-auth', async (req, res) => {
             if (user.avatar !== photo_url) { user.avatar = photo_url; changed = true; }
             if (changed) await user.save();
         }
-        res.json({ success: true, user: user.toPublicJSON() });
+
+        // Сохраняем в сессию
+        req.session.user = user.toPublicJSON();
+        
+        res.json({ 
+            success: true, 
+            user: user.toPublicJSON(),
+            message: 'Авторизация успешна'
+        });
     } catch (error) {
         console.error('Ошибка в /api/telegram-auth:', error);
         res.status(500).json({ success: false, message: 'Ошибка сервера' });
     }
+});
+
+// Проверка статуса авторизации
+app.get('/api/auth/status', (req, res) => {
+    res.json({
+        isAuthenticated: !!req.session.user,
+        user: req.session.user || null
+    });
 });
 
 // Инициализация базы данных и запуск сервера

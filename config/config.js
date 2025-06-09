@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-module.exports = {
+const config = {
     app: {
         url: process.env.APP_URL || 'http://localhost:3000',
         baseUrl: process.env.BASE_URL || 'http://localhost:3000'
@@ -8,29 +8,41 @@ module.exports = {
     database: {
         url: process.env.DATABASE_URL,
         dialect: 'postgres',
-        ssl: true,
+        ssl: process.env.NODE_ENV === 'production',
         dialectOptions: {
-            ssl: {
+            ssl: process.env.NODE_ENV === 'production' ? {
                 require: true,
                 rejectUnauthorized: false
-            }
+            } : false
         }
     },
     telegram: {
-        botToken: process.env.BOT_TOKEN,
-        botUsername: process.env.BOT_USERNAME,
+        token: process.env.BOT_TOKEN,
+        username: process.env.BOT_USERNAME,
         enabled: !!process.env.BOT_TOKEN
     },
     session: {
         secret: process.env.SESSION_SECRET || 'your-secret-key',
         cookie: {
             maxAge: 24 * 60 * 60 * 1000, // 24 часа
-            secure: true
+            secure: process.env.NODE_ENV === 'production'
         },
         resave: false,
         saveUninitialized: false
     },
     server: {
-        port: process.env.PORT || 3000
+        port: process.env.PORT || 3000,
+        env: process.env.NODE_ENV || 'development'
     }
-}; 
+};
+
+// Проверка обязательных переменных окружения
+const requiredEnvVars = ['DATABASE_URL', 'BOT_TOKEN', 'BOT_USERNAME'];
+const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingEnvVars.length > 0) {
+    console.error('Отсутствуют обязательные переменные окружения:', missingEnvVars.join(', '));
+    process.exit(1);
+}
+
+module.exports = config; 
