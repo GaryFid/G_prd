@@ -407,4 +407,75 @@ function safeShowModal(content, options = {}) {
         modal.remove();
         if (options.onClose) options.onClose();
     };
-} 
+}
+
+// Ждем загрузки DOM
+document.addEventListener('DOMContentLoaded', () => {
+    // Получаем данные пользователя из localStorage
+    const userData = localStorage.getItem('user');
+    const user = userData ? JSON.parse(userData) : null;
+
+    // Обновляем UI с данными пользователя
+    if (user) {
+        // Обновляем баланс
+        const balanceAmount = document.querySelector('.balance-amount');
+        if (balanceAmount) {
+            balanceAmount.textContent = user.balance || '0';
+        }
+
+        // Обновляем статистику
+        const stats = document.querySelectorAll('.product-card');
+        if (stats.length > 0) {
+            // Игры сыграно
+            if (stats[0]) {
+                const title = stats[0].querySelector('.product-title');
+                if (title) title.textContent = user.gamesPlayed || '0';
+            }
+            // Процент побед
+            if (stats[1]) {
+                const title = stats[1].querySelector('.product-title');
+                if (title) {
+                    const winRate = user.gamesPlayed > 0 
+                        ? Math.round((user.gamesWon / user.gamesPlayed) * 100) 
+                        : 0;
+                    title.textContent = winRate + '%';
+                }
+            }
+            // Рейтинг
+            if (stats[2]) {
+                const title = stats[2].querySelector('.product-title');
+                if (title) title.textContent = user.rating || '0';
+            }
+        }
+    }
+
+    // Обработка всех ссылок
+    document.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            // Пропускаем специальные ссылки (например, кнопку приглашения)
+            if (link.id === 'inviteFriends') return;
+
+            e.preventDefault();
+            const href = link.getAttribute('href');
+            
+            // Проверяем, что ссылка ведет на HTML страницу
+            if (href && href.endsWith('.html')) {
+                window.location.href = href;
+            }
+        });
+    });
+
+    // Анимации при загрузке
+    document.querySelectorAll('.category-card, .product-card').forEach(card => {
+        card.classList.add('fade-in');
+    });
+
+    // Обработка ошибок
+    window.onerror = function(msg, url, lineNo, columnNo, error) {
+        console.error('Ошибка:', msg, 'Файл:', url, 'Строка:', lineNo);
+        if (window.webapp) {
+            window.webapp.showNotification('Произошла ошибка: ' + msg, true);
+        }
+        return false;
+    };
+}); 
