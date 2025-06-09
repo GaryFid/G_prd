@@ -19,27 +19,27 @@
     </header>
 
     <!-- Баланс -->
-    <div class="balance-card">
+    <div class="balance-card fade-in">
         <div class="balance-amount">1000</div>
         <div class="balance-label">Монет</div>
     </div>
 
     <!-- Категории -->
-    <h2 class="categories-title">Категории</h2>
+    <h2 class="categories-title">Быстрые действия</h2>
     <div class="categories-grid">
-        <a href="game-setup.html" class="category-card">
+        <a href="game-setup.html" class="category-card fade-in">
             <div class="category-icon">
                 <i class="fas fa-play"></i>
             </div>
             <div class="category-name">Играть</div>
         </a>
-        <a href="#" class="category-card" id="inviteFriends">
+        <a href="#" class="category-card fade-in" id="inviteFriends">
             <div class="category-icon">
                 <i class="fas fa-user-plus"></i>
             </div>
             <div class="category-name">Пригласить</div>
         </a>
-        <a href="shop.html" class="category-card">
+        <a href="shop.html" class="category-card fade-in">
             <div class="category-icon">
                 <i class="fas fa-store"></i>
             </div>
@@ -48,39 +48,43 @@
     </div>
 
     <!-- Статистика -->
-    <h2 class="products-title">Статистика</h2>
-    <div class="products-grid">
-        <div class="product-card">
-            <div class="product-title">42</div>
-            <div class="product-description">Игр сыграно</div>
+    <h2 class="categories-title">Статистика</h2>
+    <div class="stats-grid">
+        <div class="stat-card fade-in">
+            <div class="stat-value">42</div>
+            <div class="stat-label">Игр сыграно</div>
         </div>
-        <div class="product-card">
-            <div class="product-title">65%</div>
-            <div class="product-description">Процент побед</div>
+        <div class="stat-card fade-in">
+            <div class="stat-value">65%</div>
+            <div class="stat-label">Процент побед</div>
         </div>
-        <div class="product-card">
-            <div class="product-title">1234</div>
-            <div class="product-description">Рейтинг</div>
+        <div class="stat-card fade-in">
+            <div class="stat-value">1234</div>
+            <div class="stat-label">Рейтинг</div>
         </div>
     </div>
 
     <!-- История игр -->
-    <h2 class="products-title">История игр</h2>
-    <div class="products-grid">
-        <div class="product-card">
-            <div class="product-title">Игра #42</div>
-            <div class="product-description">Победа</div>
-            <div class="product-price">
-                <i class="fas fa-plus price-icon" style="color: #4CAF50;"></i>
-                <span class="price-amount" style="color: #4CAF50;">+25</span>
+    <h2 class="categories-title">История игр</h2>
+    <div class="history-grid">
+        <div class="history-card fade-in">
+            <div class="history-header">
+                <div class="history-title">Игра #42</div>
+                <div class="history-result win">Победа</div>
+            </div>
+            <div class="history-points positive">
+                <i class="fas fa-plus"></i>
+                <span>25 очков</span>
             </div>
         </div>
-        <div class="product-card">
-            <div class="product-title">Игра #41</div>
-            <div class="product-description">Поражение</div>
-            <div class="product-price">
-                <i class="fas fa-minus price-icon" style="color: #F44336;"></i>
-                <span class="price-amount" style="color: #F44336;">-15</span>
+        <div class="history-card fade-in">
+            <div class="history-header">
+                <div class="history-title">Игра #41</div>
+                <div class="history-result lose">Поражение</div>
+            </div>
+            <div class="history-points negative">
+                <i class="fas fa-minus"></i>
+                <span>15 очков</span>
             </div>
         </div>
     </div>

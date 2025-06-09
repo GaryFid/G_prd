@@ -1,23 +1,30 @@
 :root {
+    /* Основные цвета */
     --primary-color: #3390ec;
     --primary-dark: #1a4a7a;
-    --background-color: #f5f5f5;
-    --text-color: #333;
-    --text-light: #666;
+    --accent-color: var(--tg-theme-button-color, #3390ec);
+    --background-color: var(--tg-theme-bg-color, #f5f5f5);
+    --text-color: var(--tg-theme-text-color, #333);
+    --text-light: var(--tg-theme-hint-color, #666);
     --white: #fff;
-    --border-radius: 15px;
-    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --tg-theme-bg-color: var(--tg-theme-bg-color, #ffffff);
-    --tg-theme-text-color: var(--tg-theme-text-color, #000000);
-    --tg-theme-hint-color: var(--tg-theme-hint-color, #999999);
-    --tg-theme-link-color: var(--tg-theme-link-color, #2481cc);
-    --tg-theme-button-color: var(--tg-theme-button-color, #2481cc);
-    --tg-theme-button-text-color: var(--tg-theme-button-text-color, #ffffff);
-    --tg-theme-secondary-bg-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-    --accent-color: var(--tg-theme-button-color);
-    --bg-color: var(--tg-theme-bg-color);
-    --secondary-bg-color: var(--tg-theme-secondary-bg-color);
-    --hint-color: var(--tg-theme-hint-color);
+    
+    /* Градиенты */
+    --gradient-primary: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    --gradient-accent: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+    
+    /* Тени */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+    
+    /* Скругления */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    
+    /* Анимации */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
 }
 
 * {
@@ -27,13 +34,11 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--bg-color);
+    background-color: var(--background-color);
     color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.6;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    padding-bottom: 70px;
 }
 
 .container {
@@ -52,169 +57,297 @@ body {
 
 /* Header Styles */
 .header {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
-    color: var(--white);
+    background: var(--gradient-primary);
     padding: 20px;
-    border-radius: var(--border-radius);
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.back-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: var(--white);
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.page-title {
+    color: var(--white);
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
 }
 
 /* Balance Display */
-.balance-display {
-    font-size: 32px;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-/* Category Buttons */
-.category-buttons {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-}
-
-.category-button {
-    background: var(--white);
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 15px 25px;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text-color);
-    cursor: pointer;
-    white-space: nowrap;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s;
-}
-
-.category-button:hover {
-    transform: translateY(-2px);
-}
-
-.category-button.active {
-    background: var(--primary-color);
+.balance-card {
+    background: var(--gradient-accent);
     color: var(--white);
+    padding: 25px;
+    border-radius: var(--radius-lg);
+    margin: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(0);
+    transition: var(--transition-normal);
 }
 
-/* Item Cards */
-.items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-.item-card {
-    background: var(--white);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s;
-}
-
-.item-card:hover {
+.balance-card:hover {
     transform: translateY(-5px);
 }
 
-.item-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
+.balance-amount {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 5px;
 }
 
-.item-content {
-    padding: 15px;
-}
-
-.item-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.item-description {
-    color: var(--text-light);
-    margin-bottom: 15px;
-    font-size: 14px;
-}
-
-.item-price {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--primary-color);
-}
-
-/* Buttons */
-.button {
-    background-color: var(--tg-theme-button-color);
-    color: var(--tg-theme-button-text-color);
-    border: none;
-    border-radius: 8px;
-    padding: 12px 20px;
+.balance-label {
     font-size: 16px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-.button:hover {
     opacity: 0.9;
 }
 
-/* Navigation */
+/* Category Buttons */
+.categories-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 20px;
+    color: var(--text-color);
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 15px;
+    padding: 0 20px;
+}
+
+.category-card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-color);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-normal);
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.category-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--accent-color);
+}
+
+.category-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Статистика */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 0 20px;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-accent);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+/* История игр */
+.history-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 20px;
+    color: var(--text-color);
+}
+
+.history-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 0 20px;
+}
+
+.history-card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-normal);
+}
+
+.history-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.history-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.history-result {
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+}
+
+.history-result.win {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+}
+
+.history-result.lose {
+    background: rgba(244, 67, 54, 0.1);
+    color: #F44336;
+}
+
+.history-points {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.history-points.positive {
+    color: #4CAF50;
+}
+
+.history-points.negative {
+    color: #F44336;
+}
+
+/* Нижняя навигация */
 .bottom-nav {
-    background-color: var(--secondary-bg-color);
-    border-top: 1px solid var(--hint-color);
-    padding: 8px 0;
+    background: var(--white);
     position: fixed;
     bottom: 0;
-    width: 100%;
+    left: 0;
+    right: 0;
     display: flex;
     justify-content: space-around;
+    padding: 12px;
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .nav-item {
-    color: var(--text-color);
-    text-decoration: none;
     display: flex;
     flex-direction: column;
     align-items: center;
-    opacity: 0.7;
+    text-decoration: none;
+    color: var(--text-light);
+    transition: var(--transition-fast);
 }
 
 .nav-item.active {
     color: var(--accent-color);
-    opacity: 1;
 }
 
-.nav-icon {
-    font-size: 24px;
-    margin-bottom: 5px;
+.nav-item i {
+    font-size: 20px;
+    margin-bottom: 4px;
 }
 
-/* Responsive Design */
+.nav-item span {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn var(--transition-normal);
+}
+
+/* Адаптивный дизайн */
 @media (max-width: 768px) {
-    .container {
-        padding: 15px;
+    .categories-grid {
+        grid-template-columns: repeat(3, 1fr);
     }
-
-    .items-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .history-grid {
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 480px) {
-    .category-buttons {
-        gap: 10px;
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
-
-    .category-button {
-        padding: 10px 20px;
-        font-size: 14px;
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
     }
-
-    .item-card {
-        margin-bottom: 15px;
+    
+    .balance-amount {
+        font-size: 32px;
     }
 }
 
