@@ -5,7 +5,7 @@ const passport = require('passport');
 const expressSession = require('express-session');
 const config = require('./config/config');
 const path = require('path');
-const sequelize = require('./config/db');
+const { sequelize, testConnection } = require('./config/db');
 const { initDatabase, User } = require('./models');
 const logger = require('./utils/logger');
 const { Pool } = require('pg');
@@ -123,7 +123,10 @@ async function startApp() {
   try {
     // Проверка подключения к PostgreSQL и инициализация базы данных
     try {
-      await sequelize.authenticate();
+      const isConnected = await testConnection();
+      if (!isConnected) {
+        throw new Error('Не удалось подключиться к базе данных');
+      }
       console.log('Подключение к PostgreSQL успешно!');
       
       await initDatabase();

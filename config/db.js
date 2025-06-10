@@ -3,8 +3,14 @@ require('dotenv').config();
 
 // Функция для создания URL базы данных из компонентов
 function buildDatabaseUrl() {
+    // Сначала проверяем DATABASE_URL
     if (process.env.DATABASE_URL) {
         return process.env.DATABASE_URL;
+    }
+    
+    // Затем проверяем DATA_BASE
+    if (process.env.DATA_BASE) {
+        return process.env.DATA_BASE;
     }
 
     // Если нет полного URL, собираем из отдельных параметров
