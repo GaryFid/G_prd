@@ -2,57 +2,9 @@ const { sequelize, testConnection } = require('../config/db');
 const { DataTypes } = require('sequelize');
 require('dotenv').config();
 
-const User = sequelize.define('User', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    telegramId: {
-        type: DataTypes.STRING,
-        unique: true
-    },
-    username: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    firstName: DataTypes.STRING,
-    lastName: DataTypes.STRING,
-    avatar: DataTypes.STRING,
-    balance: {
-        type: DataTypes.INTEGER,
-        defaultValue: 1000
-    },
-    gamesPlayed: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0
-    },
-    gamesWon: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0
-    },
-    rating: {
-        type: DataTypes.INTEGER,
-        defaultValue: 1000
-    },
-    authType: {
-        type: DataTypes.STRING,
-        defaultValue: 'telegram'
-    },
-    registrationDate: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
-    }
-}, {
-    timestamps: true
-});
-
-// Метод для безопасного возврата данных пользователя
-User.prototype.toPublicJSON = function() {
-    const values = { ...this.get() };
-    delete values.id; // Удаляем внутренний ID
-    return values;
-};
+const User = require('./user');
+const Game = require('./game');
+const Friendship = require('./friendship');
 
 // Функция инициализации базы данных
 async function initDatabase() {
@@ -73,9 +25,6 @@ async function initDatabase() {
         throw error;
     }
 }
-
-const Game = require('./game');
-const Friendship = require('./friendship');
 
 // Экспортируем модели и функции
 module.exports = {
