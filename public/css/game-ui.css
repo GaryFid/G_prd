@@ -1,8 +1,8 @@
 /* Game UI - Основные переменные */
 :root {
-    /* Цветовая схема в стиле Dota 2 */
-    --game-bg-primary: #1a1a1a;
-    --game-bg-secondary: #2a2a2a;
+    /* Цветовая схема в стиле игры */
+    --game-bg-primary: #0a1929;
+    --game-bg-secondary: #162a3d;
     --game-accent: #ff4b4b;
     --game-accent-hover: #ff6b6b;
     --game-gold: #ffd700;
@@ -16,10 +16,11 @@
     --game-text-accent: #ff4b4b;
     
     /* Градиенты */
-    --game-gradient-primary: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+    --game-gradient-primary: linear-gradient(135deg, #162a3d 0%, #0a1929 100%);
     --game-gradient-accent: linear-gradient(135deg, #ff4b4b 0%, #ff6b6b 100%);
     --game-gradient-gold: linear-gradient(135deg, #ffd700 0%, #ffb900 100%);
-    --game-gradient-header: linear-gradient(180deg, rgba(26,26,26,0.95) 0%, rgba(26,26,26,0.85) 100%);
+    --game-gradient-header: linear-gradient(180deg, rgba(10,25,41,0.95) 0%, rgba(10,25,41,0.85) 100%);
+    --game-gradient-background: linear-gradient(135deg, #0a1929 0%, #1a3f5c 50%, #0a1929 100%);
     
     /* Тени */
     --game-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -38,7 +39,8 @@
 
 /* Базовые стили */
 body {
-    background-color: var(--game-bg-primary);
+    background: var(--game-gradient-background);
+    background-attachment: fixed;
     color: var(--game-text-primary);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.6;

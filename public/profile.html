@@ -1,375 +1,142 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>P.I.D.R. - Профиль</title>
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/profile.css">
-    <link rel="stylesheet" href="css/dark-theme.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>P.I.D.R. - Профиль</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/game-ui.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="js/theme.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #fff;
-    }
-
-    .profile-container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .profile-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 30px;
-      padding: 20px;
-      background: linear-gradient(135deg, #1a4a7a 0%, #3390ec 100%);
-      border-radius: 15px;
-      color: white;
-    }
-
-    .profile-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: white;
-      margin-right: 20px;
-      overflow: hidden;
-    }
-
-    .profile-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .profile-info {
-      flex: 1;
-    }
-
-    .profile-name {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-
-    .profile-id {
-      font-size: 14px;
-      opacity: 0.8;
-    }
-
-    .stats-container {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-
-    .stat-card {
-      background: white;
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 24px;
-      font-weight: 600;
-      color: #1a4a7a;
-      margin-bottom: 5px;
-    }
-
-    .stat-label {
-      font-size: 14px;
-      color: #666;
-    }
-
-    .achievements-section {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .section-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #1a4a7a;
-      margin-bottom: 15px;
-    }
-
-    .achievements-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-    }
-
-    .achievement-card {
-      background: #f5f7fa;
-      border-radius: 8px;
-      padding: 15px;
-      text-align: center;
-      transition: transform 0.2s;
-    }
-
-    .achievement-card:hover {
-      transform: translateY(-2px);
-    }
-
-    .achievement-icon {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-
-    .achievement-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: #1a4a7a;
-      margin-bottom: 5px;
-    }
-
-    .achievement-progress {
-      width: 100%;
-      height: 4px;
-      background: #e3eafc;
-      border-radius: 2px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: linear-gradient(135deg, #1a4a7a 0%, #3390ec 100%);
-      transition: width 0.3s ease;
-    }
-
-    .history-section {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .history-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .history-item {
-      display: flex;
-      align-items: center;
-      padding: 15px 0;
-      border-bottom: 1px solid #e3eafc;
-    }
-
-    .history-item:last-child {
-      border-bottom: none;
-    }
-
-    .game-result {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      margin-right: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 12px;
-    }
-
-    .win {
-      background: #e3fcef;
-      color: #0f9d58;
-    }
-
-    .lose {
-      background: #fce3e3;
-      color: #d93025;
-    }
-
-    .game-info {
-      flex: 1;
-    }
-
-    .game-date {
-      font-size: 12px;
-      color: #666;
-    }
-
-    .game-score {
-      font-weight: 500;
-      color: #1a4a7a;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: white;
-      display: flex;
-      justify-content: space-around;
-      padding: 10px;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-decoration: none;
-      color: #666;
-      font-size: 12px;
-    }
-
-    .nav-item.active {
-      color: #1a4a7a;
-    }
-
-    .nav-icon {
-      font-size: 24px;
-      margin-bottom: 4px;
-    }
-
-    @media (max-width: 480px) {
-      .achievements-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .stats-container {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="profile-header">
-      <div class="profile-avatar">
-        <img src="https://via.placeholder.com/100" alt="Аватар пользователя">
-      </div>
-      <div class="profile-info">
-        <h1 class="profile-name">Игрок #1</h1>
-        <div class="profile-id">ID: 12345678</div>
-      </div>
+    <!-- Шапка -->
+    <header class="game-header">
+        <button class="game-back-button" onclick="history.back()">
+            <i class="fas fa-arrow-left"></i>
+            <span>Назад</span>
+        </button>
+        <h1>Профиль</h1>
+        <div style="width: 24px;"></div>
+    </header>
+
+    <div class="game-container">
+        <!-- Профиль игрока -->
+        <div class="game-card" style="text-align: center; padding: 30px;">
+            <img id="userAvatar" src="img/default-avatar.png" alt="Аватар" 
+                 style="width: 120px; height: 120px; border-radius: 60px; margin-bottom: 20px; border: 3px solid var(--game-accent);">
+            <h2 id="userName" style="margin: 0 0 10px; font-size: 24px;">Игрок</h2>
+            <p id="userStatus" style="color: var(--game-text-secondary); margin: 0;">Онлайн</p>
+        </div>
+
+        <!-- Статистика игрока -->
+        <h2 class="game-stat-label" style="margin: 30px 0 20px;">Статистика</h2>
+        <div class="game-stats">
+            <div class="game-stat-card">
+                <div class="game-stat-value">1234</div>
+                <div class="game-stat-label">Рейтинг</div>
+            </div>
+            <div class="game-stat-card">
+                <div class="game-stat-value">42</div>
+                <div class="game-stat-label">Игр сыграно</div>
+            </div>
+            <div class="game-stat-card">
+                <div class="game-stat-value">65%</div>
+                <div class="game-stat-label">Процент побед</div>
+            </div>
+        </div>
+
+        <!-- Достижения -->
+        <h2 class="game-stat-label" style="margin: 30px 0 20px;">Достижения</h2>
+        <div class="game-stats">
+            <div class="game-card">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <i class="fas fa-trophy" style="font-size: 24px; color: var(--game-gold);"></i>
+                    <div>
+                        <div style="font-weight: 600;">Первая победа</div>
+                        <div style="color: var(--game-text-secondary); font-size: 14px;">Выиграйте свою первую игру</div>
+                    </div>
+                </div>
+            </div>
+            <div class="game-card">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <i class="fas fa-medal" style="font-size: 24px; color: var(--game-blue);"></i>
+                    <div>
+                        <div style="font-weight: 600;">Ветеран</div>
+                        <div style="color: var(--game-text-secondary); font-size: 14px;">Сыграйте 100 игр</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- История игр -->
+        <h2 class="game-stat-label" style="margin: 30px 0 20px;">Последние игры</h2>
+        <div class="game-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="font-weight: 600;">Игра #42</div>
+                <div class="game-button" style="padding: 4px 12px; background: var(--game-gradient-accent);">
+                    Победа
+                </div>
+            </div>
+            <div style="color: var(--game-green); display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-plus"></i>
+                <span>25 очков</span>
+            </div>
+        </div>
+        <div class="game-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="font-weight: 600;">Игра #41</div>
+                <div class="game-button" style="padding: 4px 12px; background: var(--game-gradient-primary);">
+                    Поражение
+                </div>
+            </div>
+            <div style="color: var(--game-red); display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-minus"></i>
+                <span>15 очков</span>
+            </div>
+        </div>
+
+        <!-- Настройки -->
+        <h2 class="game-stat-label" style="margin: 30px 0 20px;">Настройки</h2>
+        <div class="game-card">
+            <div class="game-form-group">
+                <label class="game-label">Имя пользователя</label>
+                <input type="text" class="game-input" value="Игрок" placeholder="Введите имя">
+            </div>
+            <div class="game-form-group">
+                <label class="game-label">Уведомления</label>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="game-button">Включить</button>
+                    <button class="game-button" style="background: var(--game-gradient-primary);">Выключить</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-value">1000</div>
-        <div class="stat-label">Монет</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">42</div>
-        <div class="stat-label">Игр сыграно</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">28</div>
-        <div class="stat-label">Побед</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">67%</div>
-        <div class="stat-label">Процент побед</div>
-      </div>
-    </div>
-
-    <div class="achievements-section">
-      <h2 class="section-title">Достижения</h2>
-      <div class="achievements-grid">
-        <div class="achievement-card">
-          <div class="achievement-icon">
-            <i class="fas fa-trophy"></i>
-          </div>
-          <div class="achievement-name">Первая победа</div>
-          <div class="achievement-description">Выиграйте свою первую игру</div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-icon">
-            <i class="fas fa-star"></i>
-          </div>
-          <div class="achievement-name">Профессионал</div>
-          <div class="achievement-description">Выиграйте 10 игр подряд</div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-icon">
-            <i class="fas fa-crown"></i>
-          </div>
-          <div class="achievement-name">Легенда</div>
-          <div class="achievement-description">Достигните 100 побед</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="recent-activity">
-      <h2 class="section-title">Недавняя активность</h2>
-      <div class="activity-list">
-        <div class="activity-item">
-          <div class="activity-icon">
+    <!-- Нижняя навигация -->
+    <nav class="game-nav">
+        <a href="index.html" class="game-nav-item">
             <i class="fas fa-gamepad"></i>
-          </div>
-          <div class="activity-details">
-            <div class="activity-title">Победа в игре</div>
-            <div class="activity-time">2 часа назад</div>
-          </div>
-        </div>
-        <div class="activity-item">
-          <div class="activity-icon">
-            <i class="fas fa-store"></i>
-          </div>
-          <div class="activity-details">
-            <div class="activity-title">Покупка: Темная тема</div>
-            <div class="activity-time">5 часов назад</div>
-          </div>
-        </div>
-        <div class="activity-item">
-          <div class="activity-icon">
-            <i class="fas fa-trophy"></i>
-          </div>
-          <div class="activity-details">
-            <div class="activity-title">Получено достижение: Первая победа</div>
-            <div class="activity-time">1 день назад</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+            <span>Меню</span>
+        </a>
+        <a href="friends.html" class="game-nav-item">
+            <i class="fas fa-users"></i>
+            <span>Друзья</span>
+        </a>
+        <a href="profile.html" class="game-nav-item active">
+            <i class="fas fa-user"></i>
+            <span>Профиль</span>
+        </a>
+        <a href="wallet.html" class="game-nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>Кошелек</span>
+        </a>
+        <a href="rules.html" class="game-nav-item">
+            <i class="fas fa-book"></i>
+            <span>Правила</span>
+        </a>
+    </nav>
 
-  <nav class="bottom-nav">
-    <a href="profile.html" class="nav-item active">
-      <i class="fas fa-user nav-icon"></i>
-      <span>Профиль</span>
-    </a>
-    <a href="shop.html" class="nav-item">
-      <i class="fas fa-store nav-icon"></i>
-      <span>Магазин</span>
-    </a>
-    <a href="game.html" class="nav-item">
-      <i class="fas fa-gamepad nav-icon"></i>
-      <span>Игра</span>
-    </a>
-    <a href="settings.html" class="nav-item">
-      <i class="fas fa-cog nav-icon"></i>
-      <span>Настройки</span>
-    </a>
-  </nav>
-
-  <script>
-    // Инициализация Telegram WebApp
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    // Здесь можно добавить дополнительную логику для профиля
-    // Например, загрузку данных пользователя с сервера
-  </script>
+    <script src="js/webapp.js"></script>
+    <script src="js/profile.js"></script>
 </body>
 </html> 
