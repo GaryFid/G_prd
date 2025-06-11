@@ -58,6 +58,7 @@
             padding: 16px;
             max-width: 800px;
             margin: 0 auto;
+            padding-bottom: 70px;
         }
 
         .rating-card {
@@ -172,6 +173,44 @@
             display: inline-block;
         }
 
+        /* Нижняя навигация */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--tg-theme-bg-color);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            color: var(--tg-theme-hint-color);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+
+        .nav-item:hover {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
         @keyframes glow {
             from {
                 text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px var(--neon-text-color),
@@ -253,6 +292,26 @@
             </div>
         </div>
     </div>
+
+    <!-- Нижняя навигация -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Главная</span>
+        </a>
+        <a href="rating.html" class="nav-item active">
+            <i class="fas fa-trophy"></i>
+            <span>Рейтинг</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Профиль</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-cog"></i>
+            <span>Настройки</span>
+        </a>
+    </nav>
 
     <script src="js/rating.js"></script>
 </body>
