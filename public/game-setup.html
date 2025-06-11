@@ -27,6 +27,9 @@
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
+            <div class="player-range" style="text-align: center; margin-top: 10px; color: var(--text-color); opacity: 0.8;">
+                <small>Допустимое количество: от 4 до 9 игроков</small>
+            </div>
         </div>
 
         <!-- Режимы игры -->
@@ -73,17 +76,23 @@
             </div>
         </div>
 
-        <!-- Кнопка начала игры -->
-        <button class="start-game-btn" onclick="startGame()">
-            <i class="fas fa-play"></i>
-            Начать игру
-        </button>
+        <!-- Кнопки управления -->
+        <div class="setup-section" style="margin-bottom: 100px;">
+            <button class="start-game-btn" onclick="startGame()">
+                <i class="fas fa-play"></i>
+                Начать игру
+            </button>
 
-        <!-- Кнопка правил -->
-        <button class="start-game-btn" onclick="showRules()">
-            <i class="fas fa-book"></i>
-            Правила игры
-        </button>
+            <button class="start-game-btn" onclick="showRules()">
+                <i class="fas fa-book"></i>
+                Правила игры
+            </button>
+
+            <div class="game-info" style="text-align: center; margin-top: 20px;">
+                <h3 class="section-subtitle" style="margin-bottom: 5px;">P.I.D.R.</h3>
+                <small style="color: var(--text-color); opacity: 0.8;">Карточная игра</small>
+            </div>
+        </div>
     </div>
 
     <!-- Нижняя навигация -->

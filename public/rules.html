@@ -5,132 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>P.I.D.R. - Правила</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/game-ui.css">
+    <link rel="stylesheet" href="css/game-setup.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body>
+<body class="telegram-app">
     <!-- Шапка -->
-    <header class="game-header">
-        <button class="game-back-button" onclick="history.back()">
+    <header class="setup-section" style="margin-bottom: 1em;">
+        <button class="btn-circle" onclick="history.back()" style="margin-right: auto;">
             <i class="fas fa-arrow-left"></i>
-            <span>Назад</span>
         </button>
-        <h1>Правила</h1>
-        <div style="width: 24px;"></div>
+        <h1 class="section-title" style="margin: 0;">Правила игры</h1>
+        <div style="width: 40px;"></div>
     </header>
 
-    <div class="game-container">
+    <div class="container">
         <!-- Основные правила -->
-        <div class="game-card">
-            <h2 style="margin-top: 0;">Основные правила</h2>
+        <div class="setup-section">
+            <h2 class="section-subtitle">Основные правила</h2>
             <div class="rule-item">
-                <i class="fas fa-check" style="color: var(--game-green);"></i>
-                <div>
-                    <h3>Цель игры</h3>
-                    <p>Набрать наибольшее количество очков, отгадывая слова и фразы</p>
-                </div>
-            </div>
-            <div class="rule-item">
-                <i class="fas fa-users" style="color: var(--game-blue);"></i>
+                <i class="fas fa-users" style="color: var(--primary-color);"></i>
                 <div>
                     <h3>Количество игроков</h3>
-                    <p>От 2 до 6 игроков в одной комнате</p>
+                    <p>От 4 до 9 игроков</p>
                 </div>
             </div>
             <div class="rule-item">
-                <i class="fas fa-clock" style="color: var(--game-accent);"></i>
+                <i class="fas fa-cards-blank" style="color: var(--secondary-color);"></i>
                 <div>
-                    <h3>Время раунда</h3>
-                    <p>60 секунд на отгадывание слова</p>
+                    <h3>Карты игрока</h3>
+                    <p>У каждого игрока: 2 закрытые карты и 1 открытая</p>
+                </div>
+            </div>
+            <div class="rule-item">
+                <i class="fas fa-star" style="color: var(--primary-color);"></i>
+                <div>
+                    <h3>Цель игры</h3>
+                    <p>Избавиться от всех карт на руках</p>
                 </div>
             </div>
         </div>
 
-        <!-- Процесс игры -->
-        <div class="game-card">
-            <h2 style="margin-top: 0;">Процесс игры</h2>
+        <!-- Стадии игры -->
+        <div class="setup-section">
+            <h2 class="section-subtitle">Стадии игры</h2>
             <div class="rule-item">
                 <div class="rule-number">1</div>
                 <div>
-                    <h3>Создание комнаты</h3>
-                    <p>Создайте новую комнату или присоединитесь к существующей</p>
+                    <h3>Стадия 1: Базовые правила</h3>
+                    <p>- Ход только верхней картой<br>
+                    - Карта должна быть на 1 ранг выше предыдущей<br>
+                    - Масти не важны</p>
                 </div>
             </div>
             <div class="rule-item">
                 <div class="rule-number">2</div>
                 <div>
-                    <h3>Выбор слова</h3>
-                    <p>Ведущий выбирает слово из предложенных вариантов</p>
-                </div>
-            </div>
-            <div class="rule-item">
-                <div class="rule-number">3</div>
-                <div>
-                    <h3>Объяснение</h3>
-                    <p>Ведущий объясняет слово, не используя однокоренные слова</p>
-                </div>
-            </div>
-            <div class="rule-item">
-                <div class="rule-number">4</div>
-                <div>
-                    <h3>Отгадывание</h3>
-                    <p>Остальные игроки пытаются отгадать слово</p>
+                    <h3>Стадия 2: Расширенные правила</h3>
+                    <p>- Добавляются правила мастей<br>
+                    - Активируется механика "Последняя!"<br>
+                    - Доступна механика "Сколько карт?"</p>
                 </div>
             </div>
         </div>
 
-        <!-- Штрафы и бонусы -->
-        <div class="game-card">
-            <h2 style="margin-top: 0;">Штрафы и бонусы</h2>
+        <!-- Особые правила -->
+        <div class="setup-section">
+            <h2 class="section-subtitle">Особые правила</h2>
             <div class="rule-item">
-                <i class="fas fa-plus" style="color: var(--game-green);"></i>
+                <i class="fas fa-crown" style="color: var(--secondary-color);"></i>
                 <div>
-                    <h3>Правильный ответ</h3>
-                    <p>+10 очков отгадавшему и ведущему</p>
+                    <h3>Правило двойки</h3>
+                    <p>Карта "2" может побить только туз (A)</p>
                 </div>
             </div>
             <div class="rule-item">
-                <i class="fas fa-minus" style="color: var(--game-red);"></i>
+                <i class="fas fa-exclamation" style="color: var(--primary-color);"></i>
                 <div>
-                    <h3>Пропуск слова</h3>
-                    <p>-5 очков ведущему</p>
+                    <h3>Последняя!</h3>
+                    <p>Игрок должен объявить, когда у него остается одна карта</p>
                 </div>
             </div>
             <div class="rule-item">
-                <i class="fas fa-star" style="color: var(--game-gold);"></i>
+                <i class="fas fa-question" style="color: var(--secondary-color);"></i>
                 <div>
-                    <h3>Быстрый ответ</h3>
-                    <p>+5 дополнительных очков за ответ в первые 10 секунд</p>
+                    <h3>Сколько карт?</h3>
+                    <p>Игроки могут спрашивать количество карт у других участников</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Нижняя навигация -->
-    <nav class="game-nav">
-        <a href="index.html" class="game-nav-item">
-            <i class="fas fa-gamepad"></i>
-            <span>Меню</span>
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Главная</span>
         </a>
-        <a href="friends.html" class="game-nav-item">
-            <i class="fas fa-users"></i>
-            <span>Друзья</span>
+        <a href="#" class="nav-item">
+            <i class="fas fa-trophy"></i>
+            <span>Рейтинг</span>
         </a>
-        <a href="profile.html" class="game-nav-item">
+        <a href="profile.html" class="nav-item">
             <i class="fas fa-user"></i>
             <span>Профиль</span>
         </a>
-        <a href="wallet.html" class="game-nav-item">
-            <i class="fas fa-wallet"></i>
-            <span>Кошелек</span>
-        </a>
-        <a href="rules.html" class="game-nav-item active">
-            <i class="fas fa-book"></i>
-            <span>Правила</span>
+        <a href="#" class="nav-item">
+            <i class="fas fa-cog"></i>
+            <span>Настройки</span>
         </a>
     </nav>
-
-    <script src="js/webapp.js"></script>
 
     <style>
     .rule-item {
@@ -138,7 +121,7 @@
         align-items: flex-start;
         gap: 15px;
         padding: 15px 0;
-        border-bottom: 1px solid var(--game-bg-secondary);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .rule-item:last-child {
@@ -151,37 +134,43 @@
     }
 
     .rule-item i {
-        font-size: 20px;
+        font-size: 24px;
         padding-top: 3px;
     }
 
     .rule-item h3 {
         margin: 0 0 5px 0;
         font-size: 16px;
+        color: var(--primary-color);
     }
 
     .rule-item p {
         margin: 0;
-        color: var(--game-text-secondary);
+        color: var(--text-color);
+        opacity: 0.8;
         font-size: 14px;
+        line-height: 1.4;
     }
 
     .rule-number {
-        width: 24px;
-        height: 24px;
-        background: var(--game-accent);
-        color: white;
+        width: 28px;
+        height: 28px;
+        background: var(--primary-color);
+        color: var(--background-color);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 600;
-        font-size: 14px;
+        font-size: 16px;
     }
 
-    .game-card h2 {
-        font-size: 20px;
-        margin-bottom: 20px;
+    header {
+        display: flex;
+        align-items: center;
+        padding: 1em;
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
     }
     </style>
 </body>

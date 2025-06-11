@@ -8,119 +8,82 @@ const SUITS = ['hearts', 'diamonds', 'clubs', 'spades'];
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-// Состояние настроек игры
+// Настройки игры
 let gameSettings = {
     playerCount: 4,
-    gameMode: 'standard',
-    withAI: false,
-    hints: false
+    gameMode: 'classic',
+    aiOpponent: false,
+    testMode: false
 };
 
-// Класс для управления настройками игры
-class GameSetup {
-    constructor() {
-        this.initializeElements();
-        this.bindEvents();
-        this.updateUI();
-    }
-
-    initializeElements() {
-        this.playerCountElement = document.getElementById('playerCount');
-        this.playerCountText = this.playerCountElement.nextElementSibling;
-        this.aiHelperToggle = document.getElementById('aiHelper');
-        this.hintsToggle = document.getElementById('hints');
-        this.startGameBtn = document.querySelector('.start-game-btn');
-        this.modeCards = document.querySelectorAll('.mode-card');
-    }
-
-    bindEvents() {
-        // Обработчики изменения количества игроков
-        window.incrementPlayers = () => this.changePlayerCount(1);
-        window.decrementPlayers = () => this.changePlayerCount(-1);
-
-        // Обработчики режимов игры
-        this.modeCards.forEach(card => {
-            card.addEventListener('click', () => this.setGameMode(card.dataset.mode));
-        });
-
-        // Обработчики настроек
-        this.aiHelperToggle.addEventListener('change', (e) => {
-            gameSettings.withAI = e.target.checked;
-        });
-
-        this.hintsToggle.addEventListener('change', (e) => {
-            gameSettings.hints = e.target.checked;
-        });
-
-        // Обработчик начала игры
-        window.startGame = () => this.startGame();
-    }
-
-    changePlayerCount(delta) {
-        const newCount = gameSettings.playerCount + delta;
-        if (newCount >= 4 && newCount <= 9) {
-            gameSettings.playerCount = newCount;
-            this.updateUI();
-        }
-    }
-
-    setGameMode(mode) {
-        gameSettings.gameMode = mode;
-        this.modeCards.forEach(card => {
-            card.classList.toggle('active', card.dataset.mode === mode);
-        });
-    }
-
-    updateUI() {
-        // Обновляем отображение количества игроков
-        this.playerCountElement.textContent = gameSettings.playerCount;
-        
-        // Обновляем текст (игрок/игрока/игроков)
-        const count = gameSettings.playerCount;
-        if (count === 1) {
-            this.playerCountText.textContent = 'игрок';
-        } else if (count >= 2 && count <= 4) {
-            this.playerCountText.textContent = 'игрока';
-        } else {
-            this.playerCountText.textContent = 'игроков';
-        }
-    }
-
-    async startGame() {
-        try {
-            // Сохраняем настройки в localStorage для веб-версии
-            localStorage.setItem('gameSettings', JSON.stringify(gameSettings));
-
-            // Отправляем данные в Telegram WebApp
-            if (tg && tg.isExpanded) {
-                tg.sendData(JSON.stringify({
-                    action: 'start_game',
-                    settings: gameSettings
-                }));
-            }
-
-            // Для веб-версии переходим на страницу игры
-            window.location.href = 'game.html';
-        } catch (error) {
-            console.error('Ошибка при начале игры:', error);
-            if (tg && tg.isExpanded) {
-                tg.showAlert('Произошла ошибка при начале игры. Пожалуйста, попробуйте еще раз.');
-            }
-        }
+// Управление количеством игроков
+function updatePlayerCount(count) {
+    const playerCountElement = document.getElementById('playerCount');
+    const countDisplay = document.querySelector('.count-display small');
+    
+    // Ограничиваем количество игроков от 4 до 9
+    if (count < 4) count = 4;
+    if (count > 9) count = 9;
+    
+    gameSettings.playerCount = count;
+    playerCountElement.textContent = count;
+    
+    // Обновляем текст (игрок/игрока/игроков)
+    const lastDigit = count % 10;
+    const lastTwoDigits = count % 100;
+    
+    if (lastDigit === 1 && lastTwoDigits !== 11) {
+        countDisplay.textContent = 'игрок';
+    } else if ([2, 3, 4].includes(lastDigit) && ![12, 13, 14].includes(lastTwoDigits)) {
+        countDisplay.textContent = 'игрока';
+    } else {
+        countDisplay.textContent = 'игроков';
     }
 }
 
+function decrementPlayers() {
+    updatePlayerCount(gameSettings.playerCount - 1);
+}
+
+function incrementPlayers() {
+    updatePlayerCount(gameSettings.playerCount + 1);
+}
+
+// Управление режимом игры
+function selectMode(mode) {
+    const modeCards = document.querySelectorAll('.mode-card');
+    modeCards.forEach(card => {
+        card.classList.remove('active');
+        if (card.getAttribute('onclick').includes(mode)) {
+            card.classList.add('active');
+        }
+    });
+    gameSettings.gameMode = mode;
+}
+
+// Управление настройками
+document.getElementById('aiOpponent').addEventListener('change', function(e) {
+    gameSettings.aiOpponent = e.target.checked;
+});
+
+document.getElementById('testMode').addEventListener('change', function(e) {
+    gameSettings.testMode = e.target.checked;
+});
+
+// Начало игры
+function startGame() {
+    // Отправляем настройки в основное приложение
+    tg.sendData(JSON.stringify(gameSettings));
+}
+
+// Показать правила
+function showRules() {
+    window.location.href = 'rules.html';
+}
+
 // Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    new GameSetup();
-    
-    // Устанавливаем цвета Telegram WebApp если они доступны
-    if (tg.isExpanded) {
-        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.backgroundColor);
-        document.documentElement.style.setProperty('--tg-theme-text-color', tg.textColor);
-        document.documentElement.style.setProperty('--tg-theme-button-color', tg.buttonColor);
-        document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.buttonTextColor);
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    updatePlayerCount(4);
 });
 
 // Получение элементов интерфейса
