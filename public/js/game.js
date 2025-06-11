@@ -1,6 +1,16 @@
-// Инициализация Telegram WebApp
-const tg = window.Telegram.WebApp;
-tg.expand();
+// Безопасная инициализация Telegram WebApp
+let tg = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Проверяем доступность Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+        tg = window.Telegram.WebApp;
+        tg.expand();
+        initGame();
+    } else {
+        console.warn('Telegram WebApp не доступен. Возможно, приложение запущено вне Telegram.');
+    }
+});
 
 // Состояние игры
 let gameState = {
