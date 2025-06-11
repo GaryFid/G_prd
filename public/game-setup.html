@@ -69,6 +69,38 @@
             color: #1E2329;
         }
 
+        .check-icon {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            background: #FFD700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .check-icon i {
+            color: #1E2329;
+            font-size: 16px;
+        }
+
+        .table-option.active .check-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .table-count {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
         .player-seats {
             position: absolute;
             width: 100%;
@@ -83,12 +115,6 @@
             border-radius: 50%;
             position: absolute;
             transform: translate(-50%, -50%);
-        }
-
-        .table-count {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 16px;
-            font-weight: 500;
         }
 
         /* Позиции для игроков на столах */
@@ -136,6 +162,18 @@
         .seats-9 .player-seat:nth-child(7) { top: 40%; left: 5%; }
         .seats-9 .player-seat:nth-child(8) { top: 10%; left: 20%; }
         .seats-9 .player-seat:nth-child(9) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+        @media (max-width: 600px) {
+            .tables-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .table-count {
+                font-size: 14px;
+            }
+        }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -158,12 +196,7 @@
                 <div class="table-option" data-players="4">
                     <div class="table-visual">
                         <div class="table-oval">4</div>
-                        <div class="player-seats seats-4">
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                        </div>
+                        <div class="check-icon"><i class="fas fa-check"></i></div>
                     </div>
                     <div class="table-count">4 игрока</div>
                 </div>
@@ -171,13 +204,7 @@
                 <div class="table-option" data-players="5">
                     <div class="table-visual">
                         <div class="table-oval">5</div>
-                        <div class="player-seats seats-5">
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                        </div>
+                        <div class="check-icon"><i class="fas fa-check"></i></div>
                     </div>
                     <div class="table-count">5 игроков</div>
                 </div>
@@ -185,14 +212,7 @@
                 <div class="table-option" data-players="6">
                     <div class="table-visual">
                         <div class="table-oval">6</div>
-                        <div class="player-seats seats-6">
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                        </div>
+                        <div class="check-icon"><i class="fas fa-check"></i></div>
                     </div>
                     <div class="table-count">6 игроков</div>
                 </div>
@@ -200,15 +220,7 @@
                 <div class="table-option" data-players="7">
                     <div class="table-visual">
                         <div class="table-oval">7</div>
-                        <div class="player-seats seats-7">
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                        </div>
+                        <div class="check-icon"><i class="fas fa-check"></i></div>
                     </div>
                     <div class="table-count">7 игроков</div>
                 </div>
@@ -216,16 +228,7 @@
                 <div class="table-option" data-players="8">
                     <div class="table-visual">
                         <div class="table-oval">8</div>
-                        <div class="player-seats seats-8">
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                        </div>
+                        <div class="check-icon"><i class="fas fa-check"></i></div>
                     </div>
                     <div class="table-count">8 игроков</div>
                 </div>
@@ -233,17 +236,7 @@
                 <div class="table-option" data-players="9">
                     <div class="table-visual">
                         <div class="table-oval">9</div>
-                        <div class="player-seats seats-9">
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                            <div class="player-seat"></div>
-                        </div>
+                        <div class="check-icon"><i class="fas fa-check"></i></div>
                     </div>
                     <div class="table-count">9 игроков</div>
                 </div>
