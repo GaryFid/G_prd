@@ -28,9 +28,19 @@
             transition: all 0.3s ease;
         }
 
+        .table-option:hover .table-oval {
+            transform: scale(0.85) scaleX(1.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
         .table-option.active {
             background: rgba(255, 215, 0, 0.2);
             border: 2px solid #FFD700;
+        }
+
+        .table-option.active .table-oval {
+            transform: scale(0.85) scaleX(1.5);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
         }
 
         .table-option:not(.active):hover {
@@ -53,7 +63,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transform: scale(0.8);
+            transform: scale(0.8) scaleX(1.5);
+            font-size: 24px;
+            font-weight: bold;
+            color: #1E2329;
         }
 
         .player-seats {
@@ -144,7 +157,7 @@
                 <!-- Столы на 4-9 игроков -->
                 <div class="table-option" data-players="4">
                     <div class="table-visual">
-                        <div class="table-oval"></div>
+                        <div class="table-oval">4</div>
                         <div class="player-seats seats-4">
                             <div class="player-seat"></div>
                             <div class="player-seat"></div>
@@ -157,7 +170,7 @@
 
                 <div class="table-option" data-players="5">
                     <div class="table-visual">
-                        <div class="table-oval"></div>
+                        <div class="table-oval">5</div>
                         <div class="player-seats seats-5">
                             <div class="player-seat"></div>
                             <div class="player-seat"></div>
@@ -171,7 +184,7 @@
 
                 <div class="table-option" data-players="6">
                     <div class="table-visual">
-                        <div class="table-oval"></div>
+                        <div class="table-oval">6</div>
                         <div class="player-seats seats-6">
                             <div class="player-seat"></div>
                             <div class="player-seat"></div>
@@ -186,7 +199,7 @@
 
                 <div class="table-option" data-players="7">
                     <div class="table-visual">
-                        <div class="table-oval"></div>
+                        <div class="table-oval">7</div>
                         <div class="player-seats seats-7">
                             <div class="player-seat"></div>
                             <div class="player-seat"></div>
@@ -202,7 +215,7 @@
 
                 <div class="table-option" data-players="8">
                     <div class="table-visual">
-                        <div class="table-oval"></div>
+                        <div class="table-oval">8</div>
                         <div class="player-seats seats-8">
                             <div class="player-seat"></div>
                             <div class="player-seat"></div>
@@ -219,7 +232,7 @@
 
                 <div class="table-option" data-players="9">
                     <div class="table-visual">
-                        <div class="table-oval"></div>
+                        <div class="table-oval">9</div>
                         <div class="player-seats seats-9">
                             <div class="player-seat"></div>
                             <div class="player-seat"></div>

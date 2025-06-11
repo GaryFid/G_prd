@@ -95,9 +95,15 @@ class GameSetup {
             });
         }
 
-        // Глобальные функции для HTML
-        window.startGame = this.startGame;
-        window.showRules = this.showRules;
+        // Обработчик для кнопки "Начать игру"
+        if (this.elements.startGameBtn) {
+            this.elements.startGameBtn.addEventListener('click', this.startGame);
+        }
+
+        // Обработчик для кнопки "Правила"
+        if (this.elements.rulesBtn) {
+            this.elements.rulesBtn.addEventListener('click', this.showRules);
+        }
     }
 
     selectTable(players) {
@@ -107,14 +113,20 @@ class GameSetup {
 
         this.settings.playerCount = players;
         
+        // Обновляем визуальное состояние столов
         this.elements.tableOptions.forEach(table => {
             const tablePlayers = parseInt(table.getAttribute('data-players'));
             if (tablePlayers === players) {
                 table.classList.add('active');
+                // Добавляем анимацию выбора
+                table.querySelector('.table-oval').style.transform = 'scale(0.85) scaleX(1.5)';
             } else {
                 table.classList.remove('active');
+                table.querySelector('.table-oval').style.transform = 'scale(0.8) scaleX(1.5)';
             }
         });
+
+        console.log('Selected table for', players, 'players');
     }
 
     selectMode(mode) {
@@ -127,48 +139,36 @@ class GameSetup {
         });
     }
 
+    startGame() {
+        try {
+            // Сохраняем настройки в localStorage
+            localStorage.setItem('gameSettings', JSON.stringify(this.settings));
+            console.log('Game settings saved:', this.settings);
+
+            // Отправляем данные в Telegram WebApp
+            if (this.tg && this.tg.isExpanded) {
+                this.tg.sendData(JSON.stringify({
+                    action: 'start_game',
+                    settings: this.settings
+                }));
+            }
+
+            // Переходим на страницу ожидания игроков
+            window.location.href = 'wait-players.html';
+        } catch (error) {
+            console.error('Error starting game:', error);
+            alert('Произошла ошибка при запуске игры. Пожалуйста, попробуйте еще раз.');
+        }
+    }
+
     showRules() {
         window.location.href = 'rules.html';
     }
-
-    startGame() {
-        try {
-            // Проверка валидности количества игроков
-            if (this.settings.playerCount < this.PLAYER_LIMITS.MIN || 
-                this.settings.playerCount > this.PLAYER_LIMITS.MAX) {
-                throw new Error(`Количество игроков должно быть от ${this.PLAYER_LIMITS.MIN} до ${this.PLAYER_LIMITS.MAX}`);
-            }
-
-            // Сохраняем настройки локально
-            localStorage.setItem('gameSettings', JSON.stringify(this.settings));
-            
-            // Формируем данные для отправки
-            const gameData = {
-                action: 'start_game',
-                settings: this.settings
-            };
-            
-            console.log('Отправка настроек игры:', gameData);
-            
-            // Отправляем данные в бота
-            this.tg.sendData(JSON.stringify(gameData));
-            
-            // Закрываем WebApp
-            this.tg.close();
-        } catch (error) {
-            console.error('Ошибка при начале игры:', error);
-            this.tg.showPopup({
-                title: 'Ошибка',
-                message: error.message || 'Не удалось начать игру. Пожалуйста, попробуйте еще раз.',
-                buttons: [{type: 'ok'}]
-            });
-        }
-    }
 }
 
-// Инициализация после загрузки DOM
+// Создаем экземпляр класса при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    window.gameSetup = new GameSetup();
+    new GameSetup();
 });
 
 // Получение элементов интерфейса
