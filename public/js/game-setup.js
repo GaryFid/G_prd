@@ -1,111 +1,126 @@
 // --- game-setup.js без import/export ---
 
+// Константы для карт
+const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+const SUITS = ['hearts', 'diamonds', 'clubs', 'spades'];
+
 // Инициализация Telegram WebApp
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-// Состояние настроек
+// Состояние настроек игры
 let gameSettings = {
-    playerCount: 2,
-    gameMode: 'classic',
-    timeLimit: false,
-    randomEvents: false,
-    aiOpponent: false
+    playerCount: 4,
+    gameMode: 'standard',
+    withAI: false,
+    hints: false
 };
 
-// Управление количеством игроков
-function decrementPlayers() {
-    if (gameSettings.playerCount > 2) {
-        gameSettings.playerCount--;
-        updatePlayerCount();
+// Класс для управления настройками игры
+class GameSetup {
+    constructor() {
+        this.initializeElements();
+        this.bindEvents();
+        this.updateUI();
     }
-}
 
-function incrementPlayers() {
-    if (gameSettings.playerCount < 6) {
-        gameSettings.playerCount++;
-        updatePlayerCount();
+    initializeElements() {
+        this.playerCountElement = document.getElementById('playerCount');
+        this.playerCountText = this.playerCountElement.nextElementSibling;
+        this.aiHelperToggle = document.getElementById('aiHelper');
+        this.hintsToggle = document.getElementById('hints');
+        this.startGameBtn = document.querySelector('.start-game-btn');
+        this.modeCards = document.querySelectorAll('.mode-card');
     }
-}
 
-function updatePlayerCount() {
-    const countElement = document.getElementById('playerCount');
-    countElement.textContent = gameSettings.playerCount;
-    
-    // Обновляем текст "игрока/игроков"
-    const smallElement = countElement.nextElementSibling;
-    if (gameSettings.playerCount === 1) {
-        smallElement.textContent = 'игрок';
-    } else if (gameSettings.playerCount < 5) {
-        smallElement.textContent = 'игрока';
-    } else {
-        smallElement.textContent = 'игроков';
-    }
-}
+    bindEvents() {
+        // Обработчики изменения количества игроков
+        window.incrementPlayers = () => this.changePlayerCount(1);
+        window.decrementPlayers = () => this.changePlayerCount(-1);
 
-// Управление режимами игры
-document.querySelectorAll('.mode-card').forEach(card => {
-    card.addEventListener('click', () => {
-        // Убираем активный класс у всех карточек
-        document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
-        // Добавляем активный класс выбранной карточке
-        card.classList.add('active');
-        // Сохраняем выбранный режим
-        gameSettings.gameMode = card.dataset.mode;
-    });
-});
-
-// Управление дополнительными настройками
-document.getElementById('timeLimit').addEventListener('change', (e) => {
-    gameSettings.timeLimit = e.target.checked;
-});
-
-document.getElementById('randomEvents').addEventListener('change', (e) => {
-    gameSettings.randomEvents = e.target.checked;
-});
-
-document.getElementById('aiOpponent').addEventListener('change', (e) => {
-    gameSettings.aiOpponent = e.target.checked;
-});
-
-// Начало игры
-async function startGame() {
-    try {
-        const response = await fetch('/api/game/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(gameSettings),
-            credentials: 'include'
+        // Обработчики режимов игры
+        this.modeCards.forEach(card => {
+            card.addEventListener('click', () => this.setGameMode(card.dataset.mode));
         });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            // Переходим на страницу игры
-            window.location.href = `game.html?id=${data.gameId}`;
-        } else {
-            // Показываем ошибку
-            tg.showPopup({
-                title: 'Ошибка',
-                message: data.error || 'Не удалось создать игру',
-                buttons: [{ type: 'ok' }]
-            });
+
+        // Обработчики настроек
+        this.aiHelperToggle.addEventListener('change', (e) => {
+            gameSettings.withAI = e.target.checked;
+        });
+
+        this.hintsToggle.addEventListener('change', (e) => {
+            gameSettings.hints = e.target.checked;
+        });
+
+        // Обработчик начала игры
+        window.startGame = () => this.startGame();
+    }
+
+    changePlayerCount(delta) {
+        const newCount = gameSettings.playerCount + delta;
+        if (newCount >= 4 && newCount <= 9) {
+            gameSettings.playerCount = newCount;
+            this.updateUI();
         }
-    } catch (error) {
-        console.error('Ошибка при создании игры:', error);
-        tg.showPopup({
-            title: 'Ошибка',
-            message: 'Произошла ошибка при создании игры',
-            buttons: [{ type: 'ok' }]
+    }
+
+    setGameMode(mode) {
+        gameSettings.gameMode = mode;
+        this.modeCards.forEach(card => {
+            card.classList.toggle('active', card.dataset.mode === mode);
         });
+    }
+
+    updateUI() {
+        // Обновляем отображение количества игроков
+        this.playerCountElement.textContent = gameSettings.playerCount;
+        
+        // Обновляем текст (игрок/игрока/игроков)
+        const count = gameSettings.playerCount;
+        if (count === 1) {
+            this.playerCountText.textContent = 'игрок';
+        } else if (count >= 2 && count <= 4) {
+            this.playerCountText.textContent = 'игрока';
+        } else {
+            this.playerCountText.textContent = 'игроков';
+        }
+    }
+
+    async startGame() {
+        try {
+            // Сохраняем настройки в localStorage для веб-версии
+            localStorage.setItem('gameSettings', JSON.stringify(gameSettings));
+
+            // Отправляем данные в Telegram WebApp
+            if (tg && tg.isExpanded) {
+                tg.sendData(JSON.stringify({
+                    action: 'start_game',
+                    settings: gameSettings
+                }));
+            }
+
+            // Для веб-версии переходим на страницу игры
+            window.location.href = 'game.html';
+        } catch (error) {
+            console.error('Ошибка при начале игры:', error);
+            if (tg && tg.isExpanded) {
+                tg.showAlert('Произошла ошибка при начале игры. Пожалуйста, попробуйте еще раз.');
+            }
+        }
     }
 }
 
-// Инициализация страницы
+// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    updatePlayerCount();
+    new GameSetup();
+    
+    // Устанавливаем цвета Telegram WebApp если они доступны
+    if (tg.isExpanded) {
+        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.backgroundColor);
+        document.documentElement.style.setProperty('--tg-theme-text-color', tg.textColor);
+        document.documentElement.style.setProperty('--tg-theme-button-color', tg.buttonColor);
+        document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.buttonTextColor);
+    }
 });
 
 // Получение элементов интерфейса

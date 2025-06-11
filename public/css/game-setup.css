@@ -1,0 +1,229 @@
+:root {
+    /* Основные цвета */
+    --primary-color: #00ff88;
+    --secondary-color: #ff00ff;
+    --background-color: #1a1a1a;
+    --card-bg: rgba(255, 255, 255, 0.1);
+    --text-color: #ffffff;
+    
+    /* Неоновые тени */
+    --neon-primary: 0 0 10px var(--primary-color),
+                   0 0 20px var(--primary-color),
+                   0 0 30px var(--primary-color);
+    --neon-secondary: 0 0 10px var(--secondary-color),
+                     0 0 20px var(--secondary-color),
+                     0 0 30px var(--secondary-color);
+}
+
+/* Основные стили */
+body {
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Заголовок */
+.title {
+    font-size: 2.5em;
+    margin-bottom: 1.5em;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--primary-color);
+    text-shadow: var(--neon-primary);
+    animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+/* Контейнер настроек */
+.settings-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 2em;
+    background: var(--card-bg);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Секция выбора количества игроков */
+.player-count-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2em;
+    gap: 1em;
+}
+
+.player-count-btn {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.player-count-btn:hover {
+    background: var(--primary-color);
+    color: var(--background-color);
+    box-shadow: var(--neon-primary);
+}
+
+.player-count-display {
+    font-size: 2em;
+    margin: 0 1em;
+    color: var(--primary-color);
+    text-shadow: var(--neon-primary);
+}
+
+/* Карточки режимов игры */
+.mode-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5em;
+    margin-bottom: 2em;
+}
+
+.mode-card {
+    padding: 1.5em;
+    background: var(--card-bg);
+    border-radius: 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mode-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--neon-primary);
+}
+
+.mode-card.active {
+    border-color: var(--secondary-color);
+    box-shadow: var(--neon-secondary);
+}
+
+.mode-card h3 {
+    margin: 0 0 0.5em;
+    color: var(--secondary-color);
+}
+
+/* Переключатели */
+.toggle-section {
+    margin-bottom: 2em;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    margin: 1em 0;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 60px;
+    height: 34px;
+    margin-right: 1em;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--card-bg);
+    transition: .4s;
+    border-radius: 34px;
+    border: 2px solid var(--primary-color);
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 2px;
+    background-color: var(--primary-color);
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+    background-color: var(--background-color);
+}
+
+/* Кнопка начала игры */
+.start-game-btn {
+    width: 100%;
+    padding: 1em;
+    font-size: 1.2em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.start-game-btn:hover {
+    box-shadow: var(--neon-primary);
+    transform: translateY(-2px);
+}
+
+/* Анимация свечения */
+@keyframes glow {
+    from {
+        text-shadow: var(--neon-primary);
+    }
+    to {
+        text-shadow: var(--neon-secondary);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 1em;
+    }
+
+    .title {
+        font-size: 2em;
+    }
+
+    .mode-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Telegram WebApp специфичные стили */
+.telegram-app {
+    --primary-color: var(--tg-theme-button-color, #00ff88);
+    --secondary-color: var(--tg-theme-secondary-bg-color, #ff00ff);
+    --background-color: var(--tg-theme-bg-color, #1a1a1a);
+    --text-color: var(--tg-theme-text-color, #ffffff);
+} 
