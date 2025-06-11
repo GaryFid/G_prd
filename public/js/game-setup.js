@@ -7,13 +7,14 @@ const SUITS = ['hearts', 'diamonds', 'clubs', 'spades'];
 // Инициализация Telegram WebApp
 const tg = window.Telegram.WebApp;
 tg.expand();
+tg.enableClosingConfirmation();
 
-// Настройки игры
-let gameSettings = {
+// Настройки игры по умолчанию
+const gameSettings = {
     playerCount: 4,
     gameMode: 'classic',
-    aiOpponent: false,
-    testMode: false
+    withAI: false,
+    aiTestMode: false
 };
 
 // Управление количеством игроков
@@ -22,15 +23,13 @@ function updatePlayerCount(count) {
     const countDisplay = document.querySelector('.count-display small');
     
     // Ограничиваем количество игроков от 4 до 9
-    if (count < 4) count = 4;
-    if (count > 9) count = 9;
+    gameSettings.playerCount = Math.max(4, Math.min(9, count));
     
-    gameSettings.playerCount = count;
-    playerCountElement.textContent = count;
+    playerCountElement.textContent = gameSettings.playerCount;
     
     // Обновляем текст (игрок/игрока/игроков)
-    const lastDigit = count % 10;
-    const lastTwoDigits = count % 100;
+    const lastDigit = gameSettings.playerCount % 10;
+    const lastTwoDigits = gameSettings.playerCount % 100;
     
     if (lastDigit === 1 && lastTwoDigits !== 11) {
         countDisplay.textContent = 'игрок';
@@ -41,10 +40,12 @@ function updatePlayerCount(count) {
     }
 }
 
+// Уменьшение количества игроков
 function decrementPlayers() {
     updatePlayerCount(gameSettings.playerCount - 1);
 }
 
+// Увеличение количества игроков
 function incrementPlayers() {
     updatePlayerCount(gameSettings.playerCount + 1);
 }
@@ -54,37 +55,74 @@ function selectMode(mode) {
     const modeCards = document.querySelectorAll('.mode-card');
     modeCards.forEach(card => {
         card.classList.remove('active');
-        if (card.getAttribute('onclick').includes(mode)) {
+        if (card.getAttribute('data-mode') === mode) {
             card.classList.add('active');
         }
     });
     gameSettings.gameMode = mode;
 }
 
-// Управление настройками
-document.getElementById('aiOpponent').addEventListener('change', function(e) {
-    gameSettings.aiOpponent = e.target.checked;
-});
+// Инициализация обработчиков событий
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация начальных значений
+    updatePlayerCount(gameSettings.playerCount);
+    selectMode(gameSettings.gameMode);
 
-document.getElementById('testMode').addEventListener('change', function(e) {
-    gameSettings.testMode = e.target.checked;
+    // Обработчики переключателей
+    const aiOpponentToggle = document.getElementById('aiOpponent');
+    const testModeToggle = document.getElementById('testMode');
+
+    aiOpponentToggle.addEventListener('change', function(e) {
+        gameSettings.withAI = e.target.checked;
+        if (!e.target.checked) {
+            testModeToggle.checked = false;
+            gameSettings.aiTestMode = false;
+        }
+    });
+
+    testModeToggle.addEventListener('change', function(e) {
+        gameSettings.aiTestMode = e.target.checked;
+        if (e.target.checked) {
+            aiOpponentToggle.checked = true;
+            gameSettings.withAI = true;
+        }
+    });
+
+    // Обработчик кнопки правил
+    document.querySelector('[onclick="showRules()"]').addEventListener('click', function() {
+        window.location.href = 'rules.html';
+    });
 });
 
 // Начало игры
 function startGame() {
-    // Отправляем настройки в основное приложение
-    tg.sendData(JSON.stringify(gameSettings));
+    try {
+        // Сохраняем настройки локально
+        localStorage.setItem('gameSettings', JSON.stringify(gameSettings));
+        
+        // Отправляем данные в Telegram WebApp
+        const gameData = {
+            action: 'start_game',
+            settings: gameSettings
+        };
+        
+        console.log('Отправка настроек игры:', gameData);
+        
+        // Отправляем данные в бота
+        tg.sendData(JSON.stringify(gameData));
+        
+        // Закрываем WebApp
+        tg.close();
+    } catch (error) {
+        console.error('Ошибка при начале игры:', error);
+        // Показываем ошибку пользователю
+        tg.showPopup({
+            title: 'Ошибка',
+            message: 'Не удалось начать игру. Пожалуйста, попробуйте еще раз.',
+            buttons: [{type: 'ok'}]
+        });
+    }
 }
-
-// Показать правила
-function showRules() {
-    window.location.href = 'rules.html';
-}
-
-// Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-    updatePlayerCount(4);
-});
 
 // Получение элементов интерфейса
 const ovalTables = document.querySelectorAll('.oval-table');

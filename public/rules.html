@@ -8,103 +8,97 @@
     <link rel="stylesheet" href="css/game-setup.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        .rule-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .rule-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .rule-item:first-child {
-            padding-top: 0;
-        }
-
-        .rule-item i {
-            font-size: 24px;
-            color: var(--accent-color);
-            padding-top: 3px;
-        }
-
-        .rule-item h3 {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .rule-item p {
-            margin: 0;
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .rule-number {
-            width: 28px;
-            height: 28px;
-            background: var(--accent-color);
-            color: var(--text-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 16px;
-        }
-
         .header {
-            background: var(--gradient-primary);
-            padding: 20px;
-            margin-bottom: 20px;
-            position: relative;
-            box-shadow: var(--shadow-lg);
-            border-bottom: 2px solid var(--accent-color);
             display: flex;
             align-items: center;
-            gap: 20px;
+            padding: 8px 16px;
+            background: var(--tg-theme-bg-color);
+            border-bottom: 1px solid var(--divider-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .header .btn-circle {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             font-size: 16px;
+            background: transparent;
+            color: var(--tg-theme-button-color);
         }
 
         .header .section-title {
             margin: 0;
             flex-grow: 1;
             text-align: center;
+            font-size: 17px;
         }
 
         .rule-section {
-            animation: fadeIn 0.5s ease forwards;
+            margin-bottom: 24px;
         }
 
-        @media (max-width: 768px) {
+        .rule-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+        }
+
+        .rule-item:not(:last-child) {
+            border-bottom: 1px solid var(--divider-color);
+        }
+
+        .rule-item i {
+            font-size: 20px;
+            color: var(--tg-theme-button-color);
+            width: 24px;
+            text-align: center;
+        }
+
+        .rule-item h3 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--tg-theme-text-color);
+        }
+
+        .rule-item p {
+            margin: 0;
+            color: var(--tg-theme-hint-color);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .rule-number {
+            width: 24px;
+            height: 24px;
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .bottom-nav {
+            background: var(--tg-theme-bg-color);
+            border-top: 1px solid var(--divider-color);
+        }
+
+        @media (max-width: 360px) {
             .header {
-                padding: 15px;
-            }
-
-            .header .section-title {
-                font-size: 20px;
-            }
-
-            .rule-item i {
-                font-size: 20px;
+                padding: 8px 12px;
             }
 
             .rule-item h3 {
-                font-size: 14px;
+                font-size: 15px;
             }
 
             .rule-item p {
-                font-size: 12px;
+                font-size: 13px;
             }
         }
     </style>
@@ -116,81 +110,87 @@
             <i class="fas fa-arrow-left"></i>
         </button>
         <h1 class="section-title">Правила игры</h1>
-        <div style="width: 40px;"></div>
+        <div style="width: 32px;"></div>
     </header>
 
     <div class="container">
         <!-- Основные правила -->
-        <div class="setup-section rule-section">
+        <div class="rule-section">
             <h2 class="section-subtitle">Основные правила</h2>
-            <div class="rule-item">
-                <i class="fas fa-users"></i>
-                <div>
-                    <h3>Количество игроков</h3>
-                    <p>От 4 до 9 игроков</p>
+            <div class="setup-section">
+                <div class="rule-item">
+                    <i class="fas fa-users"></i>
+                    <div>
+                        <h3>Количество игроков</h3>
+                        <p>От 4 до 9 игроков</p>
+                    </div>
                 </div>
-            </div>
-            <div class="rule-item">
-                <i class="fas fa-cards-blank"></i>
-                <div>
-                    <h3>Карты игрока</h3>
-                    <p>У каждого игрока: 2 закрытые карты и 1 открытая</p>
+                <div class="rule-item">
+                    <i class="fas fa-cards-blank"></i>
+                    <div>
+                        <h3>Карты игрока</h3>
+                        <p>У каждого игрока: 2 закрытые карты и 1 открытая</p>
+                    </div>
                 </div>
-            </div>
-            <div class="rule-item">
-                <i class="fas fa-star"></i>
-                <div>
-                    <h3>Цель игры</h3>
-                    <p>Избавиться от всех карт на руках</p>
+                <div class="rule-item">
+                    <i class="fas fa-star"></i>
+                    <div>
+                        <h3>Цель игры</h3>
+                        <p>Избавиться от всех карт на руках</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Стадии игры -->
-        <div class="setup-section rule-section">
+        <div class="rule-section">
             <h2 class="section-subtitle">Стадии игры</h2>
-            <div class="rule-item">
-                <div class="rule-number">1</div>
-                <div>
-                    <h3>Стадия 1: Базовые правила</h3>
-                    <p>- Ход только верхней картой<br>
-                    - Карта должна быть на 1 ранг выше предыдущей<br>
-                    - Масти не важны</p>
+            <div class="setup-section">
+                <div class="rule-item">
+                    <div class="rule-number">1</div>
+                    <div>
+                        <h3>Стадия 1: Базовые правила</h3>
+                        <p>• Ход только верхней картой<br>
+                        • Карта должна быть на 1 ранг выше предыдущей<br>
+                        • Масти не важны</p>
+                    </div>
                 </div>
-            </div>
-            <div class="rule-item">
-                <div class="rule-number">2</div>
-                <div>
-                    <h3>Стадия 2: Расширенные правила</h3>
-                    <p>- Добавляются правила мастей<br>
-                    - Активируется механика "Последняя!"<br>
-                    - Доступна механика "Сколько карт?"</p>
+                <div class="rule-item">
+                    <div class="rule-number">2</div>
+                    <div>
+                        <h3>Стадия 2: Расширенные правила</h3>
+                        <p>• Добавляются правила мастей<br>
+                        • Активируется механика "Последняя!"<br>
+                        • Доступна механика "Сколько карт?"</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Особые правила -->
-        <div class="setup-section rule-section">
+        <div class="rule-section">
             <h2 class="section-subtitle">Особые правила</h2>
-            <div class="rule-item">
-                <i class="fas fa-crown"></i>
-                <div>
-                    <h3>Правило двойки</h3>
-                    <p>Карта "2" может побить только туз (A)</p>
+            <div class="setup-section">
+                <div class="rule-item">
+                    <i class="fas fa-crown"></i>
+                    <div>
+                        <h3>Правило двойки</h3>
+                        <p>Карта "2" может побить только туз (A)</p>
+                    </div>
                 </div>
-            </div>
-            <div class="rule-item">
-                <i class="fas fa-exclamation"></i>
-                <div>
-                    <h3>Последняя!</h3>
-                    <p>Игрок должен объявить, когда у него остается одна карта</p>
+                <div class="rule-item">
+                    <i class="fas fa-exclamation"></i>
+                    <div>
+                        <h3>Последняя!</h3>
+                        <p>Игрок должен объявить, когда у него остается одна карта</p>
+                    </div>
                 </div>
-            </div>
-            <div class="rule-item">
-                <i class="fas fa-question"></i>
-                <div>
-                    <h3>Сколько карт?</h3>
-                    <p>Игроки могут спрашивать количество карт у других участников</p>
+                <div class="rule-item">
+                    <i class="fas fa-question"></i>
+                    <div>
+                        <h3>Сколько карт?</h3>
+                        <p>Игроки могут спрашивать количество карт у других участников</p>
+                    </div>
                 </div>
             </div>
         </div>

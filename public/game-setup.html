@@ -2,16 +2,23 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>P.I.D.R. - Настройка игры</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/game-setup.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body class="telegram-app">
-    <div class="container">
+    <!-- Шапка -->
+    <header class="header">
+        <button class="btn-circle" onclick="window.Telegram.WebApp.close()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
         <h1 class="section-title">Настройка игры</h1>
+        <div style="width: 32px;"></div>
+    </header>
 
+    <div class="container">
         <!-- Количество игроков -->
         <div class="setup-section">
             <h2 class="section-subtitle">Количество игроков</h2>
@@ -27,7 +34,7 @@
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
-            <div class="player-range" style="text-align: center; margin-top: 10px; color: var(--text-color); opacity: 0.8;">
+            <div class="player-range">
                 <small>Допустимое количество: от 4 до 9 игроков</small>
             </div>
         </div>
@@ -36,15 +43,15 @@
         <div class="setup-section">
             <h2 class="section-subtitle">Режим игры</h2>
             <div class="game-modes">
-                <div class="mode-card active" onclick="selectMode('classic')">
+                <div class="mode-card active" data-mode="classic">
                     <i class="fas fa-chess"></i>
                     <span>Классический</span>
                 </div>
-                <div class="mode-card" onclick="selectMode('quick')">
+                <div class="mode-card" data-mode="quick">
                     <i class="fas fa-bolt"></i>
                     <span>Быстрый</span>
                 </div>
-                <div class="mode-card" onclick="selectMode('custom')">
+                <div class="mode-card" data-mode="custom">
                     <i class="fas fa-cog"></i>
                     <span>Свой</span>
                 </div>
@@ -77,7 +84,7 @@
         </div>
 
         <!-- Кнопки управления -->
-        <div class="setup-section" style="margin-bottom: 100px;">
+        <div class="setup-section" style="margin-bottom: 80px;">
             <button class="start-game-btn" onclick="startGame()">
                 <i class="fas fa-play"></i>
                 Начать игру
@@ -88,9 +95,9 @@
                 Правила игры
             </button>
 
-            <div class="game-info" style="text-align: center; margin-top: 20px;">
-                <h3 class="section-subtitle" style="margin-bottom: 5px;">P.I.D.R.</h3>
-                <small style="color: var(--text-color); opacity: 0.8;">Карточная игра</small>
+            <div class="game-info">
+                <h3 class="section-subtitle">P.I.D.R.</h3>
+                <small>Карточная игра</small>
             </div>
         </div>
     </div>
