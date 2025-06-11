@@ -20,7 +20,7 @@ class GameSetup {
 
         // Настройки игры по умолчанию
         this.settings = {
-            playerCount: this.PLAYER_LIMITS.MIN, // Начинаем с минимального количества
+            playerCount: this.PLAYER_LIMITS.MIN,
             gameMode: 'classic',
             withAI: false,
             aiTestMode: false
@@ -28,9 +28,7 @@ class GameSetup {
 
         // Получение DOM элементов
         this.elements = {
-            playerCount: document.getElementById('playerCount'),
-            countDisplay: document.querySelector('.count-display small'),
-            playerRange: document.querySelector('.player-range small'),
+            tableOptions: document.querySelectorAll('.table-option'),
             modeCards: document.querySelectorAll('.mode-card'),
             aiOpponent: document.getElementById('aiOpponent'),
             testMode: document.getElementById('testMode'),
@@ -39,9 +37,7 @@ class GameSetup {
         };
 
         // Привязка методов к контексту
-        this.updatePlayerCount = this.updatePlayerCount.bind(this);
-        this.decrementPlayers = this.decrementPlayers.bind(this);
-        this.incrementPlayers = this.incrementPlayers.bind(this);
+        this.selectTable = this.selectTable.bind(this);
         this.selectMode = this.selectMode.bind(this);
         this.startGame = this.startGame.bind(this);
         this.showRules = this.showRules.bind(this);
@@ -51,24 +47,25 @@ class GameSetup {
     }
 
     init() {
-        // Установка начальных значений
-        this.updatePlayerCount(this.settings.playerCount);
-        
-        // Обновляем текст с диапазоном игроков
-        if (this.elements.playerRange) {
-            this.elements.playerRange.textContent = `Допустимое количество: от ${this.PLAYER_LIMITS.MIN} до ${this.PLAYER_LIMITS.MAX} игроков`;
-        }
-        
         // Привязка обработчиков событий
         this.bindEvents();
 
-        // Активация начального режима
+        // Активация начального режима и стола
         this.selectMode('classic');
+        this.selectTable(this.settings.playerCount);
 
         console.log('GameSetup initialized with player limits:', this.PLAYER_LIMITS);
     }
 
     bindEvents() {
+        // Обработчики для выбора стола
+        this.elements.tableOptions.forEach(table => {
+            table.addEventListener('click', () => {
+                const players = parseInt(table.getAttribute('data-players'));
+                this.selectTable(players);
+            });
+        });
+
         // Обработчики для режимов игры
         this.elements.modeCards.forEach(card => {
             card.addEventListener('click', () => {
@@ -99,50 +96,25 @@ class GameSetup {
         }
 
         // Глобальные функции для HTML
-        window.decrementPlayers = this.decrementPlayers;
-        window.incrementPlayers = this.incrementPlayers;
         window.startGame = this.startGame;
         window.showRules = this.showRules;
     }
 
-    updatePlayerCount(count) {
-        // Ограничение количества игроков
-        this.settings.playerCount = Math.max(
-            this.PLAYER_LIMITS.MIN,
-            Math.min(this.PLAYER_LIMITS.MAX, count)
-        );
-        
-        if (this.elements.playerCount) {
-            this.elements.playerCount.textContent = this.settings.playerCount;
+    selectTable(players) {
+        if (players < this.PLAYER_LIMITS.MIN || players > this.PLAYER_LIMITS.MAX) {
+            return;
         }
+
+        this.settings.playerCount = players;
         
-        if (this.elements.countDisplay) {
-            const lastDigit = this.settings.playerCount % 10;
-            const lastTwoDigits = this.settings.playerCount % 100;
-            
-            if (lastDigit === 1 && lastTwoDigits !== 11) {
-                this.elements.countDisplay.textContent = 'игрок';
-            } else if ([2, 3, 4].includes(lastDigit) && ![12, 13, 14].includes(lastTwoDigits)) {
-                this.elements.countDisplay.textContent = 'игрока';
+        this.elements.tableOptions.forEach(table => {
+            const tablePlayers = parseInt(table.getAttribute('data-players'));
+            if (tablePlayers === players) {
+                table.classList.add('active');
             } else {
-                this.elements.countDisplay.textContent = 'игроков';
+                table.classList.remove('active');
             }
-        }
-
-        // Проверка валидности количества игроков перед отправкой
-        if (this.elements.startGameBtn) {
-            this.elements.startGameBtn.disabled = 
-                this.settings.playerCount < this.PLAYER_LIMITS.MIN || 
-                this.settings.playerCount > this.PLAYER_LIMITS.MAX;
-        }
-    }
-
-    decrementPlayers() {
-        this.updatePlayerCount(this.settings.playerCount - 1);
-    }
-
-    incrementPlayers() {
-        this.updatePlayerCount(this.settings.playerCount + 1);
+        });
     }
 
     selectMode(mode) {
