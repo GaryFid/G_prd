@@ -23,14 +23,14 @@
         <div class="setup-section">
             <h2 class="section-subtitle">Количество игроков</h2>
             <div class="player-count">
-                <button class="btn-circle" onclick="decrementPlayers()">
+                <button class="btn-circle" onclick="window.decrementPlayers()">
                     <i class="fas fa-minus"></i>
                 </button>
                 <div class="count-display">
                     <span id="playerCount">4</span>
                     <small>игрока</small>
                 </div>
-                <button class="btn-circle" onclick="incrementPlayers()">
+                <button class="btn-circle" onclick="window.incrementPlayers()">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
@@ -85,12 +85,12 @@
 
         <!-- Кнопки управления -->
         <div class="setup-section" style="margin-bottom: 80px;">
-            <button class="start-game-btn" onclick="startGame()">
+            <button class="start-game-btn" onclick="window.startGame()">
                 <i class="fas fa-play"></i>
                 Начать игру
             </button>
 
-            <button class="start-game-btn" onclick="showRules()">
+            <button class="start-game-btn" data-action="showRules" onclick="window.showRules()">
                 <i class="fas fa-book"></i>
                 Правила игры
             </button>
@@ -122,6 +122,7 @@
         </a>
     </nav>
 
+    <!-- Загружаем скрипт после DOM -->
     <script src="js/game-setup.js"></script>
 </body>
 </html> 
