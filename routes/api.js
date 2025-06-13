@@ -3,8 +3,16 @@ const router = express.Router();
 const { Game, User } = require('../models');
 const logger = require('../utils/logger');
 
-// Получение состояния игры
-router.get('/game/state', async (req, res) => {
+// Middleware для проверки авторизации
+const checkAuth = (req, res, next) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Необходима авторизация' });
+    }
+    next();
+};
+
+// Middleware для проверки существования игры
+const checkGame = async (req, res, next) => {
     try {
         const gameId = req.session.gameId;
         if (!gameId) {
@@ -16,6 +24,80 @@ router.get('/game/state', async (req, res) => {
             return res.status(404).json({ success: false, message: 'Игра не найдена' });
         }
 
+        req.game = game;
+        next();
+    } catch (error) {
+        logger.error('Ошибка при проверке игры:', error);
+        res.status(500).json({ success: false, message: 'Внутренняя ошибка сервера' });
+    }
+};
+
+// Создание новой игры
+router.post('/game/create', checkAuth, async (req, res) => {
+    try {
+        const { withAI } = req.body;
+        const userId = req.session.userId;
+
+        // Создаем новую игру
+        const game = await Game.create({
+            status: 'waiting',
+            withAI: withAI || false,
+            currentPlayerId: userId,
+            startTime: new Date(),
+            gameStage: 'stage1'
+        });
+
+        // Получаем данные пользователя
+        const user = await User.findByPk(userId);
+        
+        // Инициализируем игроков
+        game.players = [{
+            id: userId,
+            username: user.username,
+            avatar: user.avatar,
+            cards: []
+        }];
+
+        // Если игра с ИИ, добавляем бота
+        if (withAI) {
+            game.players.push({
+                id: 'ai',
+                username: 'Бот',
+                avatar: '/img/bot-avatar.png',
+                cards: []
+            });
+        }
+
+        // Инициализируем колоду и раздаем карты
+        game.initializeDeck();
+        game.dealInitialCards();
+
+        // Сохраняем ID игры в сессии
+        req.session.gameId = game.id;
+        
+        // Сохраняем изменения
+        await game.save();
+
+        res.json({
+            success: true,
+            gameState: {
+                players: game.players,
+                currentPlayer: game.currentPlayerId,
+                deck: game.deck,
+                discardPile: game.discardPile,
+                stage: game.gameStage
+            }
+        });
+    } catch (error) {
+        logger.error('Ошибка при создании игры:', error);
+        res.status(500).json({ success: false, message: 'Внутренняя ошибка сервера' });
+    }
+});
+
+// Получение состояния игры
+router.get('/game/state', checkAuth, checkGame, async (req, res) => {
+    try {
+        const game = req.game;
         res.json({
             success: true,
             gameState: {
@@ -33,20 +115,11 @@ router.get('/game/state', async (req, res) => {
 });
 
 // Сыграть карту
-router.post('/game/play-card', async (req, res) => {
+router.post('/game/play-card', checkAuth, checkGame, async (req, res) => {
     try {
         const { cardId } = req.body;
-        const gameId = req.session.gameId;
+        const game = req.game;
         const userId = req.session.userId;
-
-        if (!gameId || !cardId) {
-            return res.status(400).json({ success: false, message: 'Неверные параметры' });
-        }
-
-        const game = await Game.findByPk(gameId);
-        if (!game) {
-            return res.status(404).json({ success: false, message: 'Игра не найдена' });
-        }
 
         if (game.currentPlayerId !== userId) {
             return res.status(403).json({ success: false, message: 'Сейчас не ваш ход' });
@@ -90,6 +163,11 @@ router.post('/game/play-card', async (req, res) => {
             const currentPlayerIndex = game.players.findIndex(p => p.id === userId);
             const nextPlayerIndex = (currentPlayerIndex + 1) % game.players.length;
             game.currentPlayerId = game.players[nextPlayerIndex].id;
+
+            // Если следующий игрок - бот, делаем его ход
+            if (game.withAI && game.players[nextPlayerIndex].id === 'ai') {
+                await makeAIMove(game);
+            }
         }
 
         await game.save();
@@ -113,19 +191,10 @@ router.post('/game/play-card', async (req, res) => {
 });
 
 // Взять карту
-router.post('/game/draw-card', async (req, res) => {
+router.post('/game/draw-card', checkAuth, checkGame, async (req, res) => {
     try {
-        const gameId = req.session.gameId;
+        const game = req.game;
         const userId = req.session.userId;
-
-        if (!gameId) {
-            return res.status(400).json({ success: false, message: 'Неверные параметры' });
-        }
-
-        const game = await Game.findByPk(gameId);
-        if (!game) {
-            return res.status(404).json({ success: false, message: 'Игра не найдена' });
-        }
 
         if (game.currentPlayerId !== userId) {
             return res.status(403).json({ success: false, message: 'Сейчас не ваш ход' });
@@ -149,6 +218,16 @@ router.post('/game/draw-card', async (req, res) => {
         const card = game.deck.pop();
         currentPlayer.cards.push(card);
 
+        // Передаем ход следующему игроку
+        const currentPlayerIndex = game.players.findIndex(p => p.id === userId);
+        const nextPlayerIndex = (currentPlayerIndex + 1) % game.players.length;
+        game.currentPlayerId = game.players[nextPlayerIndex].id;
+
+        // Если следующий игрок - бот, делаем его ход
+        if (game.withAI && game.players[nextPlayerIndex].id === 'ai') {
+            await makeAIMove(game);
+        }
+
         await game.save();
 
         res.json({
@@ -166,5 +245,51 @@ router.post('/game/draw-card', async (req, res) => {
         res.status(500).json({ success: false, message: 'Внутренняя ошибка сервера' });
     }
 });
+
+// Функция для хода бота
+async function makeAIMove(game) {
+    const aiPlayer = game.players.find(p => p.id === 'ai');
+    const topDiscard = game.discardPile[game.discardPile.length - 1];
+
+    // Ищем подходящую карту
+    const playableCard = aiPlayer.cards.find(card => 
+        card.suit === topDiscard.suit || card.value === topDiscard.value
+    );
+
+    if (playableCard) {
+        // Играем карту
+        const cardIndex = aiPlayer.cards.findIndex(c => c.id === playableCard.id);
+        aiPlayer.cards.splice(cardIndex, 1);
+        game.discardPile.push(playableCard);
+
+        // Проверяем победу
+        if (aiPlayer.cards.length === 0) {
+            game.status = 'finished';
+            game.winnerId = 'ai';
+            game.endTime = new Date();
+        }
+    } else {
+        // Берем карту
+        if (game.deck.length === 0) {
+            const topDiscard = game.discardPile.pop();
+            game.deck = game.discardPile;
+            game.discardPile = [topDiscard];
+            
+            // Перемешиваем колоду
+            for (let i = game.deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [game.deck[i], game.deck[j]] = [game.deck[j], game.deck[i]];
+            }
+        }
+
+        const card = game.deck.pop();
+        aiPlayer.cards.push(card);
+    }
+
+    // Передаем ход следующему игроку
+    const aiIndex = game.players.findIndex(p => p.id === 'ai');
+    const nextPlayerIndex = (aiIndex + 1) % game.players.length;
+    game.currentPlayerId = game.players[nextPlayerIndex].id;
+}
 
 module.exports = router; 

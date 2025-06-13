@@ -22,42 +22,93 @@ class Game {
             stage: 'stage1'
         };
         
+        this.isTelegram = window.Telegram?.WebApp != null;
         this.init();
     }
 
     async init() {
-        // Инициализация игры
-        await this.fetchGameState();
-        this.setupEventListeners();
-        this.renderGame();
+        try {
+            // Инициализация Telegram WebApp если доступен
+            if (this.isTelegram) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+            }
+
+            // Получаем начальное состояние игры
+            await this.initializeGame();
+            
+            // Настраиваем обработчики событий только после загрузки DOM
+            document.addEventListener('DOMContentLoaded', () => {
+                this.setupEventListeners();
+            });
+
+            // Первичная отрисовка
+            this.renderGame();
+        } catch (error) {
+            console.error('Ошибка инициализации игры:', error);
+        }
     }
 
-    async fetchGameState() {
+    async initializeGame() {
         try {
             const response = await fetch('/api/game/state');
+            const data = await response.json();
+            
+            if (data.success) {
+                this.gameState = data.gameState;
+                this.renderGame();
+            } else {
+                // Если игра не найдена, создаем новую
+                await this.createNewGame();
+            }
+        } catch (error) {
+            console.error('Ошибка при получении состояния игры:', error);
+            // В случае ошибки также пытаемся создать новую игру
+            await this.createNewGame();
+        }
+    }
+
+    async createNewGame() {
+        try {
+            const response = await fetch('/api/game/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    withAI: !this.isTelegram // Если не в Telegram, играем с ИИ
+                })
+            });
+            
             const data = await response.json();
             if (data.success) {
                 this.gameState = data.gameState;
                 this.renderGame();
             }
         } catch (error) {
-            console.error('Ошибка при получении состояния игры:', error);
+            console.error('Ошибка при создании игры:', error);
         }
     }
 
     setupEventListeners() {
-        // Обработчики для карт в руке
-        document.querySelector('.player-hand').addEventListener('click', (e) => {
-            const cardElement = e.target.closest('.card');
-            if (cardElement && !cardElement.classList.contains('flipped')) {
-                this.handleCardClick(cardElement);
-            }
-        });
+        // Проверяем существование элементов перед добавлением обработчиков
+        const playerHand = document.querySelector('.player-hand');
+        const drawCardBtn = document.getElementById('draw-card');
 
-        // Обработчик для кнопки взятия карты
-        document.getElementById('draw-card').addEventListener('click', () => {
-            this.drawCard();
-        });
+        if (playerHand) {
+            playerHand.addEventListener('click', (e) => {
+                const cardElement = e.target.closest('.card');
+                if (cardElement && !cardElement.classList.contains('flipped')) {
+                    this.handleCardClick(cardElement);
+                }
+            });
+        }
+
+        if (drawCardBtn) {
+            drawCardBtn.addEventListener('click', () => {
+                this.drawCard();
+            });
+        }
     }
 
     handleCardClick(cardElement) {
@@ -68,7 +119,6 @@ class Game {
     }
 
     isValidMove(cardId) {
-        // Проверка возможности хода
         const card = this.findCard(cardId);
         const topDiscard = this.gameState.discardPile[this.gameState.discardPile.length - 1];
         
@@ -97,6 +147,14 @@ class Game {
             if (data.success) {
                 this.gameState = data.gameState;
                 this.renderGame();
+
+                // Если игра в Telegram, отправляем данные в приложение
+                if (this.isTelegram) {
+                    window.Telegram.WebApp.sendData(JSON.stringify({
+                        action: 'cardPlayed',
+                        gameState: this.gameState
+                    }));
+                }
             }
         } catch (error) {
             console.error('Ошибка при игре картой:', error);
@@ -113,6 +171,14 @@ class Game {
             if (data.success) {
                 this.gameState = data.gameState;
                 this.renderGame();
+
+                // Если игра в Telegram, отправляем данные в приложение
+                if (this.isTelegram) {
+                    window.Telegram.WebApp.sendData(JSON.stringify({
+                        action: 'cardDrawn',
+                        gameState: this.gameState
+                    }));
+                }
             }
         } catch (error) {
             console.error('Ошибка при взятии карты:', error);
@@ -120,6 +186,15 @@ class Game {
     }
 
     renderGame() {
+        // Проверяем, загружен ли DOM
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.renderGameContent());
+        } else {
+            this.renderGameContent();
+        }
+    }
+
+    renderGameContent() {
         this.renderPlayers();
         this.renderCards();
         this.renderGameInfo();
