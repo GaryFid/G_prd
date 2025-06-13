@@ -3,20 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ожидание игроков...</title>
+    <title>Ожидание игроков - P.I.D.R.</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/wait-players.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Разгильдяй</h1>
+            <h1>P.I.D.R.</h1>
             <p>Ожидание игроков за столом...</p>
         </header>
         <main>
-            <div class="wait-table-animation">
-                <div class="oval-table-anim" id="table-anim"></div>
-                <div class="wait-text">Ждём игроков и ботов...</div>
+            <div class="game-table-container">
+                <div class="game-table">
+                    <div class="table-light"></div>
+                    <div class="players-slots">
+                        <!-- Слоты для игроков будут добавлены динамически -->
+                    </div>
+                </div>
+                <div class="table-reflection"></div>
+            </div>
+            
+            <div class="players-info">
+                <div class="connected-players">
+                    <h3>Подключенные игроки</h3>
+                    <div class="players-list">
+                        <!-- Список игроков будет добавлен динамически -->
+                    </div>
+                </div>
+                <div class="waiting-status">
+                    <div class="spinner">
+                        <div class="spinner-inner"></div>
+                    </div>
+                    <p>Ожидаем подключения игроков...</p>
+                    <p class="players-count">0/4 игроков готовы</p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="add-bot" class="game-btn">
+                    <span class="btn-icon">🤖</span>
+                    Добавить бота
+                </button>
+                <button id="start-game" class="game-btn primary" disabled>
+                    <span class="btn-icon">🎮</span>
+                    Начать игру
+                </button>
             </div>
         </main>
         <footer>

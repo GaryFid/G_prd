@@ -1,122 +1,198 @@
 // --- wait-players.js без import/export ---
 
-document.addEventListener('DOMContentLoaded', function() {
-    var tgApp = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-    if (tgApp) tgApp.expand();
-    if (tgApp && tgApp.themeParams) {
-        document.documentElement.style.setProperty('--tg-theme-bg-color', tgApp.themeParams.bg_color || '#ffffff');
-        document.documentElement.style.setProperty('--tg-theme-text-color', tgApp.themeParams.text_color || '#000000');
-        document.documentElement.style.setProperty('--tg-theme-button-color', tgApp.themeParams.button_color || '#3390ec');
-        document.documentElement.style.setProperty('--tg-theme-button-text-color', tgApp.themeParams.button_text_color || '#ffffff');
+class WaitingRoom {
+    constructor() {
+        this.maxPlayers = 4;
+        this.players = [];
+        this.isTelegram = window.Telegram?.WebApp != null;
+        
+        this.init();
     }
-    // Получаем настройки игры (количество игроков)
-    let settings = localStorage.getItem('gameSettings');
-    let playerCount = 6;
-    let withAI = false;
-    if (settings) {
+
+    init() {
+        // Инициализация Telegram WebApp если доступен
+        if (this.isTelegram) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+        }
+
+        // Настройка слотов для игроков
+        this.setupPlayerSlots();
+        
+        // Добавляем обработчики событий
+        this.setupEventListeners();
+        
+        // Начинаем проверку подключения игроков
+        this.startPolling();
+    }
+
+    setupPlayerSlots() {
+        const slotsContainer = document.querySelector('.players-slots');
+        const positions = this.calculatePlayerPositions();
+
+        // Создаем слоты для игроков
+        positions.forEach((pos, index) => {
+            const slot = document.createElement('div');
+            slot.className = 'player-slot empty';
+            slot.style.left = pos.x + '%';
+            slot.style.top = pos.y + '%';
+            
+            slot.innerHTML = `
+                <div class="player-avatar">
+                    <img src="/img/empty-avatar.png" alt="Empty slot">
+                </div>
+                <div class="player-name">Ожидание игрока...</div>
+            `;
+            
+            slotsContainer.appendChild(slot);
+        });
+    }
+
+    calculatePlayerPositions() {
+        const positions = [];
+        const radius = 35; // Расстояние от центра стола
+        
+        for (let i = 0; i < this.maxPlayers; i++) {
+            const angle = (i * 360 / this.maxPlayers + 45) * Math.PI / 180;
+            positions.push({
+                x: 50 + radius * Math.cos(angle),
+                y: 50 + radius * Math.sin(angle)
+            });
+        }
+        
+        return positions;
+    }
+
+    setupEventListeners() {
+        // Обработчик для кнопки добавления бота
+        const addBotBtn = document.getElementById('add-bot');
+        if (addBotBtn) {
+            addBotBtn.addEventListener('click', () => this.addBot());
+        }
+
+        // Обработчик для кнопки начала игры
+        const startGameBtn = document.getElementById('start-game');
+        if (startGameBtn) {
+            startGameBtn.addEventListener('click', () => this.startGame());
+        }
+    }
+
+    async startPolling() {
         try {
-            const parsed = JSON.parse(settings);
-            playerCount = parsed.playerCount || 6;
-            withAI = parsed.withAI || false;
-        } catch (e) {}
-    }
-    const table = document.getElementById('table-anim');
-    table.innerHTML = '';
-    // Список всех карт
-    const cardNames = [
-        '6_of_hearts','6_of_spades','6_of_diamonds','6_of_clubs',
-        '7_of_hearts','7_of_spades','7_of_diamonds','7_of_clubs',
-        '8_of_hearts','8_of_spades','8_of_diamonds','8_of_clubs',
-        '9_of_hearts','9_of_spades','9_of_diamonds','9_of_clubs',
-        '10_of_hearts','10_of_spades','10_of_diamonds','10_of_clubs',
-        'jack_of_hearts','jack_of_spades','jack_of_diamonds','jack_of_clubs',
-        'queen_of_hearts','queen_of_spades','queen_of_diamonds','queen_of_clubs',
-        'king_of_hearts','king_of_spades','king_of_diamonds','king_of_clubs',
-        'ace_of_hearts','ace_of_spades','ace_of_diamonds','ace_of_clubs',
-        '2_of_hearts','2_of_spades','2_of_diamonds','2_of_clubs',
-        '3_of_hearts','3_of_spades','3_of_diamonds','3_of_clubs',
-        '4_of_hearts','4_of_spades','4_of_diamonds','4_of_clubs',
-        '5_of_hearts','5_of_spades','5_of_diamonds','5_of_clubs'
-    ];
-    // Координаты мест за столом (по кругу)
-    const radiusX = 140;
-    const radiusY = 60;
-    const centerX = 160;
-    const centerY = 80;
-    for (let i = 0; i < playerCount; i++) {
-        const angle = (2 * Math.PI / playerCount) * i - Math.PI/2;
-        const x = centerX + radiusX * Math.cos(angle) - 24;
-        const y = centerY + radiusY * Math.sin(angle) - 24;
-        const seat = document.createElement('div');
-        seat.className = 'seat-anim';
-        seat.style.left = x + 'px';
-        seat.style.top = y + 'px';
-        // Рандомная карта
-        const card = document.createElement('img');
-        card.className = 'card-anim';
-        const cardName = cardNames[Math.floor(Math.random() * cardNames.length)];
-        card.src = `img/cards/${cardName}.png`;
-        card.alt = cardName;
-        seat.appendChild(card);
-        table.appendChild(seat);
-    }
-    // Добавляем полоску загрузки на стол
-    const loader = document.createElement('div');
-    loader.className = 'table-loader';
-    const loaderBar = document.createElement('div');
-    loaderBar.className = 'table-loader-bar';
-    loader.appendChild(loaderBar);
-    table.appendChild(loader);
-    // Кнопка "Добить комнату AI" (только для создателя)
-    let isCreator = true; // Здесь можно добавить свою логику проверки
-    if (isCreator) {
-        const btn = document.createElement('button');
-        btn.textContent = 'Добить комнату AI';
-        btn.className = 'btn-ai';
-        btn.style.marginTop = '20px';
-        btn.onclick = function() {
-            // Добавляем недостающих ботов
-            let settings = localStorage.getItem('gameSettings');
-            let playerCount = 6;
-            if (settings) {
-                try {
-                    const parsed = JSON.parse(settings);
-                    playerCount = parsed.playerCount || 6;
-                    parsed.withAI = true;
-                    localStorage.setItem('gameSettings', JSON.stringify(parsed));
-                } catch (e) {}
+            const response = await fetch('/api/game/waiting-room/status');
+            const data = await response.json();
+            
+            if (data.success) {
+                this.updatePlayers(data.players);
+                this.updateStatus(data.players.length);
+                
+                // Если игра готова к запуску, активируем кнопку
+                const startGameBtn = document.getElementById('start-game');
+                if (startGameBtn) {
+                    startGameBtn.disabled = data.players.length < 2;
+                }
             }
-            // Обновляем анимацию: все места с ботами (рандомные карты)
-            table.innerHTML = '';
-            for (let i = 0; i < playerCount; i++) {
-                const angle = (2 * Math.PI / playerCount) * i - Math.PI/2;
-                const x = centerX + radiusX * Math.cos(angle) - 24;
-                const y = centerY + radiusY * Math.sin(angle) - 24;
-                const seat = document.createElement('div');
-                seat.className = 'seat-anim';
-                seat.style.left = x + 'px';
-                seat.style.top = y + 'px';
-                const card = document.createElement('img');
-                card.className = 'card-anim';
-                const cardName = cardNames[Math.floor(Math.random() * cardNames.length)];
-                card.src = `img/cards/${cardName}.png`;
-                card.alt = cardName;
-                seat.appendChild(card);
-                table.appendChild(seat);
-            }
-            // Добавляем полоску загрузки на стол после обновления
-            const loader = document.createElement('div');
-            loader.className = 'table-loader';
-            const loaderBar = document.createElement('div');
-            loaderBar.className = 'table-loader-bar';
-            loader.appendChild(loaderBar);
-            table.appendChild(loader);
-            showToast('Комната дополнена ботами!', 'info');
-        };
-        document.querySelector('.wait-table-animation').appendChild(btn);
+        } catch (error) {
+            console.error('Ошибка при получении статуса комнаты:', error);
+        }
+
+        // Продолжаем опрос каждые 2 секунды
+        setTimeout(() => this.startPolling(), 2000);
     }
-    // Имитация ожидания 2.5 сек, потом переход к игре
-    setTimeout(function() {
-        window.location.href = '/game.html';
-    }, 2500);
-}); 
+
+    updatePlayers(players) {
+        const slots = document.querySelectorAll('.player-slot');
+        const playersList = document.querySelector('.players-list');
+        
+        // Обновляем слоты
+        slots.forEach((slot, index) => {
+            const player = players[index];
+            
+            if (player) {
+                slot.className = 'player-slot';
+                slot.innerHTML = `
+                    <div class="player-avatar">
+                        <img src="${player.avatar || '/img/default-avatar.png'}" alt="${player.username}">
+                    </div>
+                    <div class="player-name">${player.username}</div>
+                `;
+                
+                // Добавляем анимацию если это новый игрок
+                if (!this.players[index]) {
+                    slot.classList.add('appearing');
+                    setTimeout(() => slot.classList.remove('appearing'), 300);
+                }
+            } else {
+                slot.className = 'player-slot empty';
+                slot.innerHTML = `
+                    <div class="player-avatar">
+                        <img src="/img/empty-avatar.png" alt="Empty slot">
+                    </div>
+                    <div class="player-name">Ожидание игрока...</div>
+                `;
+            }
+        });
+
+        // Обновляем список игроков
+        if (playersList) {
+            playersList.innerHTML = players.map(player => `
+                <div class="player-item">
+                    <img src="${player.avatar || '/img/default-avatar.png'}" alt="${player.username}">
+                    <span>${player.username}</span>
+                </div>
+            `).join('');
+        }
+
+        this.players = players;
+    }
+
+    updateStatus(playerCount) {
+        const countElement = document.querySelector('.players-count');
+        if (countElement) {
+            countElement.textContent = `${playerCount}/${this.maxPlayers} игроков готовы`;
+        }
+    }
+
+    async addBot() {
+        try {
+            const response = await fetch('/api/game/waiting-room/add-bot', {
+                method: 'POST'
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                this.updatePlayers(data.players);
+                this.updateStatus(data.players.length);
+            }
+        } catch (error) {
+            console.error('Ошибка при добавлении бота:', error);
+        }
+    }
+
+    async startGame() {
+        try {
+            const response = await fetch('/api/game/start', {
+                method: 'POST'
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                // Если игра в Telegram, отправляем данные в приложение
+                if (this.isTelegram) {
+                    window.Telegram.WebApp.sendData(JSON.stringify({
+                        action: 'gameStarted',
+                        gameId: data.gameId
+                    }));
+                } else {
+                    // Иначе перенаправляем на страницу игры
+                    window.location.href = `/game?id=${data.gameId}`;
+                }
+            }
+        } catch (error) {
+            console.error('Ошибка при запуске игры:', error);
+        }
+    }
+}
+
+// Инициализация комнаты ожидания
+const waitingRoom = new WaitingRoom(); 
