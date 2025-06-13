@@ -240,6 +240,11 @@
 </head>
 <body>
     <div class="game-container">
+        <div class="game-stage-info">
+            <div class="stage-number">Стадия 1</div>
+            <div class="stage-description">Сбросьте карту той же масти или значения</div>
+        </div>
+        
         <div class="table-container">
             <div class="table">
                 <div class="card-deck">
@@ -251,31 +256,19 @@
                 </div>
             </div>
         </div>
-
-        <div class="game-stage-info">
-            <div class="stage-number">Стадия 1</div>
-            <div class="stage-description">Выкладка карт на 1 ранг выше</div>
-        </div>
-
-        <div class="settings-btn">
-            <span>⚙️</span>
-        </div>
-
+        
         <div class="game-controls">
             <div class="current-player-info">
-                <img src="img/player-avatar.svg" alt="Аватар" class="player-avatar">
-                <div class="player-name">Ваш ход</div>
+                <div class="player-avatar"></div>
+                <div class="player-name"></div>
             </div>
-
+            
             <div class="action-buttons">
-                <button class="game-btn" id="draw-card">Взять карту</button>
-                <button class="game-btn" id="play-card">Сыграть</button>
-                <button class="game-btn" id="self-card">Положить себе</button>
-                <button class="game-btn" id="end-turn">Передать ход</button>
+                <button id="draw-card" class="game-btn">Взять карту</button>
             </div>
-
+            
             <div class="player-hand">
-                <!-- Карты будут добавлены динамически -->
+                <!-- Карты игрока будут добавлены динамически -->
             </div>
         </div>
     </div>
