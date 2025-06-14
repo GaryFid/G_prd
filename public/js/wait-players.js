@@ -6,12 +6,18 @@ tg.expand();
 
 // Конфигурация
 const config = {
-    maxPlayers: 4,
-    minPlayers: 2,
+    maxPlayers: 9,
+    minPlayers: 4,
+    currentPlayers: 1,
     playerPositions: [
-        { top: '20%', left: '20%' },
-        { top: '20%', left: '80%' },
+        { top: '10%', left: '20%' },
+        { top: '10%', left: '50%' },
+        { top: '10%', left: '80%' },
+        { top: '45%', left: '10%' },
+        { top: '45%', left: '50%' },
+        { top: '45%', left: '90%' },
         { top: '80%', left: '20%' },
+        { top: '80%', left: '50%' },
         { top: '80%', left: '80%' }
     ],
     particleCount: 30
@@ -22,7 +28,8 @@ let gameState = {
     players: [],
     isHost: false,
     roomId: null,
-    interval: null
+    interval: null,
+    settings: null
 };
 
 // DOM элементы
@@ -84,11 +91,43 @@ function updatePlayerSlot(slot, player) {
     }, 600);
 }
 
+// Загрузка настроек игры
+async function loadGameSettings() {
+    try {
+        const response = await fetch(`/api/settings/${gameState.roomId}`);
+        if (!response.ok) throw new Error('Failed to fetch game settings');
+        
+        const settings = await response.json();
+        gameState.settings = settings;
+        config.maxPlayers = settings.maxPlayers;
+        config.minPlayers = settings.minPlayers;
+        config.currentPlayers = settings.currentPlayers;
+        
+        // Обновляем UI
+        updateGameState();
+    } catch (error) {
+        console.error('Error loading game settings:', error);
+        showNotification('Не удалось загрузить настройки игры', 'error');
+    }
+}
+
 // Обновление состояния игры
 function updateGameState() {
-    elements.connectedPlayers.textContent = `${gameState.players.length}/${config.maxPlayers}`;
-    elements.startGameBtn.disabled = gameState.players.length < config.minPlayers || !gameState.isHost;
-    elements.addBotBtn.disabled = gameState.players.length >= config.maxPlayers;
+    const currentPlayers = Math.max(1, gameState.players.length); // Минимум 1 игрок (создатель)
+    elements.connectedPlayers.textContent = `${currentPlayers}/${config.maxPlayers}`;
+    elements.startGameBtn.disabled = currentPlayers < config.minPlayers || !gameState.isHost;
+    elements.addBotBtn.disabled = currentPlayers >= config.maxPlayers;
+
+    // Обновляем настройки на сервере
+    if (gameState.isHost) {
+        fetch(`/api/settings/${gameState.roomId}/players`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ currentPlayers })
+        }).catch(error => console.error('Error updating player count:', error));
+    }
 }
 
 // Добавление бота
@@ -195,32 +234,37 @@ async function updateRoom() {
     }
 }
 
-// Инициализация
+// Модифицируем функцию init
 async function init() {
     try {
-        // Получение параметров из URL
+        // Получаем roomId из URL или другого источника
         const urlParams = new URLSearchParams(window.location.search);
         gameState.roomId = urlParams.get('roomId');
         gameState.isHost = urlParams.get('isHost') === 'true';
 
-        if (!gameState.roomId) throw new Error('No room ID provided');
+        if (!gameState.roomId) {
+            throw new Error('Room ID not found');
+        }
 
-        // Создание слотов игроков
-        config.playerPositions.forEach((position, index) => {
-            createPlayerSlot(position, index);
+        // Инициализируем UI
+        initParticles();
+        config.playerPositions.forEach((pos, index) => {
+            createPlayerSlot(pos, index);
         });
 
-        // Инициализация частиц
-        initParticles();
+        // Загружаем настройки игры
+        await loadGameSettings();
 
-        // Первое обновление состояния комнаты
-        await updateRoom();
-
-        // Запуск периодического обновления
+        // Запускаем обновление состояния комнаты
         gameState.interval = setInterval(updateRoom, 2000);
+
+        // Добавляем обработчики событий
+        elements.startGameBtn.addEventListener('click', startGame);
+        elements.addBotBtn.addEventListener('click', addBot);
+
     } catch (error) {
         console.error('Initialization error:', error);
-        showNotification('Ошибка инициализации комнаты', 'error');
+        showNotification('Ошибка инициализации', 'error');
     }
 }
 
