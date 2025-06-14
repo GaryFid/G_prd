@@ -123,6 +123,12 @@ function updateGameState() {
     // Обновляем статус готовности
     const readyPlayers = gameState.players.filter(player => player.isReady).length;
     elements.readyStatus.textContent = `${readyPlayers}/${currentPlayers}`;
+
+    // Исправляем надпись "игроков готовы" в блоке ожидания
+    const waitingTitle = document.querySelector('.waiting-title .connected-players');
+    if (waitingTitle) {
+        waitingTitle.textContent = `${readyPlayers}/${gameState.settings.maxPlayers}`;
+    }
 }
 
 // Добавление бота

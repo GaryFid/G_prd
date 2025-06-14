@@ -292,4 +292,32 @@ async function makeAIMove(game) {
     game.currentPlayerId = game.players[nextPlayerIndex].id;
 }
 
+// Добавление бота в игру
+router.post('/add-bot', checkAuth, checkGame, async (req, res) => {
+    try {
+        const game = req.game;
+        // Проверяем, не превышено ли максимальное количество игроков
+        if (game.players.length >= 9) {
+            return res.status(400).json({ success: false, message: 'Достигнуто максимальное количество игроков' });
+        }
+        // Проверяем, есть ли уже бот
+        if (game.players.some(p => p.id === 'ai')) {
+            return res.status(400).json({ success: false, message: 'Бот уже добавлен' });
+        }
+        // Добавляем бота
+        const bot = {
+            id: 'ai',
+            username: 'Бот',
+            avatar: '/img/bot-avatar.png',
+            cards: []
+        };
+        game.players.push(bot);
+        await game.save();
+        res.json(bot);
+    } catch (error) {
+        logger.error('Ошибка при добавлении бота:', error);
+        res.status(500).json({ success: false, message: 'Внутренняя ошибка сервера' });
+    }
+});
+
 module.exports = router; 
