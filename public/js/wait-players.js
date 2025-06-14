@@ -38,7 +38,8 @@ const elements = {
     connectedPlayers: document.querySelector('.connected-players'),
     startGameBtn: document.querySelector('.start-game-btn'),
     addBotBtn: document.querySelector('.add-bot-btn'),
-    backgroundEffects: document.querySelector('.background-effects')
+    backgroundEffects: document.querySelector('.background-effects'),
+    readyStatus: document.querySelector('.ready-status')
 };
 
 // Инициализация частиц
@@ -101,7 +102,6 @@ async function loadGameSettings() {
         gameState.settings = settings;
         config.maxPlayers = settings.maxPlayers;
         config.minPlayers = settings.minPlayers;
-        config.currentPlayers = settings.currentPlayers;
         
         // Обновляем UI
         updateGameState();
@@ -113,21 +113,16 @@ async function loadGameSettings() {
 
 // Обновление состояния игры
 function updateGameState() {
-    const currentPlayers = Math.max(1, gameState.players.length); // Минимум 1 игрок (создатель)
-    elements.connectedPlayers.textContent = `${currentPlayers}/${config.maxPlayers}`;
-    elements.startGameBtn.disabled = currentPlayers < config.minPlayers || !gameState.isHost;
-    elements.addBotBtn.disabled = currentPlayers >= config.maxPlayers;
+    if (!gameState.settings) return;
 
-    // Обновляем настройки на сервере
-    if (gameState.isHost) {
-        fetch(`/api/settings/${gameState.roomId}/players`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ currentPlayers })
-        }).catch(error => console.error('Error updating player count:', error));
-    }
+    const currentPlayers = gameState.players.length;
+    elements.connectedPlayers.textContent = `${currentPlayers}/${gameState.settings.maxPlayers}`;
+    elements.startGameBtn.disabled = currentPlayers < gameState.settings.minPlayers || !gameState.isHost;
+    elements.addBotBtn.disabled = currentPlayers >= gameState.settings.maxPlayers;
+
+    // Обновляем статус готовности
+    const readyPlayers = gameState.players.filter(player => player.isReady).length;
+    elements.readyStatus.textContent = `${readyPlayers}/${currentPlayers}`;
 }
 
 // Добавление бота
@@ -203,24 +198,25 @@ async function updateRoom() {
 
         const roomState = await response.json();
         
-        // Обновление списка игроков
-        roomState.players.forEach((player, index) => {
-            if (!gameState.players[index] || gameState.players[index].id !== player.id) {
-                gameState.players[index] = player;
-                updatePlayerSlot(document.querySelectorAll('.player-slot')[index], player);
+        // Обновляем список игроков
+        gameState.players = roomState.players;
+        
+        // Обновляем слоты игроков
+        gameState.players.forEach((player, index) => {
+            const slot = document.querySelectorAll('.player-slot')[index];
+            if (slot) {
+                updatePlayerSlot(slot, player);
             }
         });
 
-        // Удаление лишних игроков
-        if (roomState.players.length < gameState.players.length) {
-            gameState.players = roomState.players;
-            document.querySelectorAll('.player-slot').forEach((slot, index) => {
-                if (index >= roomState.players.length) {
-                    slot.className = 'player-slot empty';
-                    slot.querySelector('.player-avatar img').src = 'images/empty-avatar.png';
-                    slot.querySelector('.player-name').textContent = 'Пустой слот';
-                }
-            });
+        // Очищаем пустые слоты
+        for (let i = gameState.players.length; i < config.maxPlayers; i++) {
+            const slot = document.querySelectorAll('.player-slot')[i];
+            if (slot) {
+                slot.className = 'player-slot empty';
+                slot.querySelector('.player-avatar img').src = 'images/empty-avatar.png';
+                slot.querySelector('.player-name').textContent = 'Пустой слот';
+            }
         }
 
         updateGameState();
@@ -234,13 +230,13 @@ async function updateRoom() {
     }
 }
 
-// Модифицируем функцию init
+// Инициализация
 async function init() {
     try {
-        // Получаем roomId из URL или другого источника
+        // Получаем roomId из URL или Telegram WebApp
         const urlParams = new URLSearchParams(window.location.search);
-        gameState.roomId = urlParams.get('roomId');
-        gameState.isHost = urlParams.get('isHost') === 'true';
+        gameState.roomId = urlParams.get('roomId') || tg.initDataUnsafe?.start_param;
+        gameState.isHost = urlParams.get('isHost') === 'true' || false;
 
         if (!gameState.roomId) {
             throw new Error('Room ID not found');
@@ -248,14 +244,18 @@ async function init() {
 
         // Инициализируем UI
         initParticles();
-        config.playerPositions.forEach((pos, index) => {
-            createPlayerSlot(pos, index);
-        });
-
+        
         // Загружаем настройки игры
         await loadGameSettings();
+        
+        // Создаем слоты для игроков
+        for (let i = 0; i < gameState.settings.maxPlayers; i++) {
+            const position = config.playerPositions[i] || { top: '50%', left: '50%' };
+            createPlayerSlot(position, i);
+        }
 
         // Запускаем обновление состояния комнаты
+        await updateRoom();
         gameState.interval = setInterval(updateRoom, 2000);
 
         // Добавляем обработчики событий

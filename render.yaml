@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: pidr-game
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pidr_db
+          property: connectionString
+
+databases:
+  - name: pidr_db
+    databaseName: pidr_game
+    user: pidr_admin
+    postgresMajorVersion: 15 
