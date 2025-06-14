@@ -15,9 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
 class Game {
     constructor() {
         this.gameState = {
-            players: [],
+    players: [],
             currentPlayer: null,
-            deck: [],
+    deck: [],
             discardPile: [],
             stage: 'stage1'
         };
@@ -27,7 +27,7 @@ class Game {
     }
 
     async init() {
-        try {
+    try {
             // Инициализация Telegram WebApp если доступен
             if (this.isTelegram) {
                 window.Telegram.WebApp.ready();
@@ -44,10 +44,10 @@ class Game {
 
             // Первичная отрисовка
             this.renderGame();
-        } catch (error) {
+    } catch (error) {
             console.error('Ошибка инициализации игры:', error);
-        }
     }
+}
 
     async initializeGame() {
         try {
@@ -69,26 +69,26 @@ class Game {
     }
 
     async createNewGame() {
-        try {
+    try {
             const response = await fetch('/api/game/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
                 body: JSON.stringify({
                     withAI: !this.isTelegram // Если не в Telegram, играем с ИИ
                 })
-            });
+        });
             
-            const data = await response.json();
-            if (data.success) {
+        const data = await response.json();
+        if (data.success) {
                 this.gameState = data.gameState;
                 this.renderGame();
-            }
-        } catch (error) {
-            console.error('Ошибка при создании игры:', error);
         }
+    } catch (error) {
+            console.error('Ошибка при создании игры:', error);
     }
+}
 
     setupEventListeners() {
         // Проверяем существование элементов перед добавлением обработчиков

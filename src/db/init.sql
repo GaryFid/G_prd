@@ -36,6 +36,9 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+-- Удаляем триггер, если он уже существует
+DROP TRIGGER IF EXISTS update_game_rooms_updated_at ON game_rooms;
+
 -- Создание триггера для обновления timestamp
 CREATE TRIGGER update_game_rooms_updated_at
     BEFORE UPDATE ON game_rooms
