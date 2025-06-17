@@ -275,4 +275,54 @@ window.safeShowModal = function(html, opts = {}) {
   const old = document.getElementById('universal-modal');
   if (old) old.remove();
   showModal(html, opts);
-}; 
+};
+
+// === Глобальные функции для кнопок ===
+async function createTable() {
+    try {
+        // Получаем имя игрока (из Telegram WebApp или localStorage)
+        let playerName = 'Игрок';
+        let playerId = null;
+        if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
+            playerName = Telegram.WebApp.initDataUnsafe.first_name || Telegram.WebApp.initDataUnsafe.username || 'Игрок';
+            playerId = Telegram.WebApp.initDataUnsafe.user?.id || null;
+        } else if (localStorage.getItem('user')) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            playerName = user.first_name || user.username || 'Игрок';
+            playerId = user.id || null;
+        }
+        // Получаем выбранное количество игроков
+        let playerCount = 4;
+        const activeTable = document.querySelector('.table-option.active');
+        if (activeTable) {
+            playerCount = parseInt(activeTable.getAttribute('data-players'));
+        }
+        // Генерируем уникальный roomId
+        const roomId = Math.random().toString(36).substr(2, 9);
+        // Запрос на создание комнаты
+        const res = await fetch('/api/settings/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                roomId,
+                maxPlayers: playerCount,
+                minPlayers: playerCount,
+                hostId: playerId || roomId,
+                hostName: playerName
+            })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Ошибка создания стола');
+        // Сохраняем roomId и роль хоста
+        localStorage.setItem('roomId', roomId);
+        localStorage.setItem('isHost', 'true');
+        // Переходим на страницу ожидания игроков
+        window.location.href = `wait-players.html?roomId=${roomId}&isHost=true`;
+    } catch (error) {
+        alert('Ошибка при создании стола: ' + error.message);
+    }
+}
+
+function openTablesList() {
+    window.location.href = 'tables-list.html';
+} 

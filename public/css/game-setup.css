@@ -351,4 +351,48 @@ input:checked + .toggle-slider:before {
     --secondary-color: var(--tg-theme-secondary-bg-color, #ff00ff);
     --background-color: var(--tg-theme-bg-color, #000000);
     --text-color: var(--tg-theme-text-color, #ffffff);
+}
+
+/* Кнопки управления столами */
+.setup-controls {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 32px 0 0 0;
+}
+.create-table-btn, .join-table-btn {
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--tg-theme-button-text-color, #fff);
+    background: linear-gradient(135deg, #FFD700 0%, #FFB300 100%);
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.create-table-btn i, .join-table-btn i {
+    font-size: 22px;
+}
+.create-table-btn:hover, .join-table-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+@media (max-width: 600px) {
+    .setup-controls {
+        flex-direction: column;
+        gap: 12px;
+        padding: 0 20px;
+    }
+    .create-table-btn, .join-table-btn {
+        width: 100%;
+        justify-content: center;
+    }
 } 

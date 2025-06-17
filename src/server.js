@@ -11,6 +11,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // API routes
 app.use('/api/settings', gameSettingsRouter);
+app.use('/api', gameSettingsRouter);
 
 // Error handling
 app.use((err, req, res, next) => {

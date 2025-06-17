@@ -287,11 +287,17 @@
             </div>
         </div>
 
-        <!-- Кнопка начала игры -->
-        <button class="start-game-btn" type="button">
-            <i class="fas fa-play"></i>
-            Начать игру
-        </button>
+        <!-- Кнопки создания и присоединения к столу -->
+        <div class="setup-controls">
+            <button class="create-table-btn" type="button" onclick="createTable()">
+                <i class="fas fa-plus"></i>
+                Создать стол
+            </button>
+            <button class="join-table-btn" type="button" onclick="openTablesList()">
+                <i class="fas fa-sign-in-alt"></i>
+                Присоединиться
+            </button>
+        </div>
     </div>
 
     <!-- Нижняя навигация -->

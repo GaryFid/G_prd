@@ -115,4 +115,49 @@ router.patch('/:roomId/players', async (req, res) => {
     }
 });
 
+// Новый эндпоинт для получения состояния комнаты
+router.get('/room/:roomId', async (req, res) => {
+    try {
+        const { roomId } = req.params;
+        // Получаем игроков
+        const playersResult = await db.query(
+            'SELECT player_id, player_name, is_bot, is_ready, is_host, position FROM players WHERE room_id = $1 ORDER BY position ASC',
+            [roomId]
+        );
+        // Получаем статус комнаты
+        const roomResult = await db.query(
+            'SELECT status FROM game_rooms WHERE room_id = $1',
+            [roomId]
+        );
+        if (roomResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Комната не найдена' });
+        }
+        res.json({
+            players: playersResult.rows,
+            status: roomResult.rows[0].status
+        });
+    } catch (error) {
+        console.error('Error fetching room state:', error);
+        res.status(500).json({ error: 'Ошибка при получении состояния комнаты' });
+    }
+});
+
+// Эндпоинт для получения списка всех комнат
+router.get('/rooms', async (req, res) => {
+    try {
+        const result = await db.query(
+            `SELECT room_id, max_players, min_players, status, 
+                    (SELECT player_name FROM players WHERE room_id = game_rooms.room_id AND is_host = true LIMIT 1) as host_name,
+                    (SELECT COUNT(*) FROM players WHERE room_id = game_rooms.room_id) as current_players
+             FROM game_rooms
+             WHERE status = 'waiting'
+             ORDER BY created_at DESC`
+        );
+        res.json({ rooms: result.rows });
+    } catch (error) {
+        console.error('Error fetching rooms:', error);
+        res.status(500).json({ error: 'Ошибка при получении списка комнат' });
+    }
+});
+
 module.exports = router; 
