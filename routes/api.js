@@ -3,13 +3,14 @@ const router = express.Router();
 const { Game, User } = require('../models');
 const logger = require('../utils/logger');
 
-// Middleware для проверки авторизации
-const checkAuth = (req, res, next) => {
+// Логирующий checkAuth
+function checkAuth(req, res, next) {
+    console.log('SESSION:', req.session);
     if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Необходима авторизация' });
     }
     next();
-};
+}
 
 // Middleware для проверки существования игры
 const checkGame = async (req, res, next) => {

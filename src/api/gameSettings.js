@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 
-const checkAuth = (req, res, next) => {
+// Логирующий checkAuth
+function checkAuth(req, res, next) {
+    console.log('SESSION:', req.session);
     if (!req.session.userId) {
         return res.status(401).json({ error: 'Необходима авторизация' });
     }
     next();
-};
+}
 
 // Получение настроек игры
 router.get('/:roomId', checkAuth, async (req, res) => {
