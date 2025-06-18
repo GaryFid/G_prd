@@ -11,6 +11,7 @@ const logger = require('./utils/logger');
 const { Pool } = require('pg');
 const pgSession = require('connect-pg-simple')(expressSession);
 const gameSettingsRouter = require('./src/api/gameSettings');
+const cors = require('cors');
 
 // Импорт сцен и обработчиков
 const { authScene } = require('./scenes/auth');
@@ -154,6 +155,12 @@ async function startApp() {
     const PORT = process.env.PORT || 3000;
 
     // Настройка middleware
+    app.use(cors({
+      origin: 'https://card76.onrender.com',
+      credentials: true,
+      methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+      allowedHeaders: ['Content-Type', 'Authorization']
+    }));
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
@@ -170,8 +177,10 @@ async function startApp() {
       saveUninitialized: false,
       cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax'
+        secure: true, // обязательно true для Render/HTTPS
+        sameSite: 'lax', // или 'none' если фронт и бэк на разных поддоменах
+        path: '/', // cookie виден на всех путях
+        httpOnly: true // защита от XSS
       }
     }));
 
