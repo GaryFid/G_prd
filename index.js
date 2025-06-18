@@ -242,7 +242,11 @@ async function startApp() {
           if (user.avatar !== photo_url) { user.avatar = photo_url; changed = true; }
           if (changed) await user.save();
         }
-        res.json({ success: true, user: user.toPublicJSON() });
+        req.session.userId = user.id;
+        req.session.telegramUsername = username;
+        req.session.save(() => {
+          res.json({ success: true, user: user.toPublicJSON() });
+        });
       } catch (error) {
         console.error('Ошибка в /api/telegram-auth:', error);
         res.status(500).json({ success: false, message: 'Ошибка сервера' });

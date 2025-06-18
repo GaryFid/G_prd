@@ -1,8 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация Telegram WebApp
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
     // Кнопка "Назад"
     const backButton = document.getElementById('backButton');
     if (backButton) {

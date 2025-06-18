@@ -1,9 +1,5 @@
 // --- profile.js без import/export ---
 
-// Инициализация Telegram WebApp
-const tg = window.Telegram.WebApp;
-tg.expand();
-
 // Загрузка данных профиля
 async function loadProfile() {
     try {

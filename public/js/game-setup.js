@@ -187,6 +187,12 @@ async function ensureTelegramAuth() {
             alert('Ошибка авторизации: ' + (data.message || ''));
             throw new Error('Telegram auth failed');
         }
+        // Жёстко проверяем, что сессия реально установлена
+        const profileRes = await fetch('/api/user/profile', { credentials: 'include' });
+        if (!profileRes.ok) {
+            alert('Ошибка: сессия не установлена. Попробуйте перезагрузить страницу.');
+            throw new Error('Session not established');
+        }
     }
 }
 

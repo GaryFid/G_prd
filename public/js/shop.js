@@ -1,9 +1,5 @@
 // --- shop.js без import/export ---
 
-// Инициализация Telegram WebApp
-const tg = window.Telegram.WebApp;
-tg.expand();
-
 // Загрузка данных магазина
 async function loadShopData() {
     try {

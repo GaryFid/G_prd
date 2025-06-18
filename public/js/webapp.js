@@ -1,6 +1,3 @@
-// Инициализация Telegram WebApp
-const tg = window.Telegram.WebApp;
-
 // Основные настройки
 tg.expand(); // Раскрываем на весь экран
 tg.enableClosingConfirmation(); // Подтверждение закрытия

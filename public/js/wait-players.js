@@ -1,9 +1,5 @@
 // --- wait-players.js без import/export ---
 
-// Инициализация Telegram WebApp
-const tg = window.Telegram.WebApp;
-tg.expand();
-
 // Конфигурация
 const config = {
     maxPlayers: 9,

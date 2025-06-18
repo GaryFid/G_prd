@@ -1,7 +1,3 @@
-// Инициализация Telegram WebApp
-const tg = window.Telegram.WebApp;
-tg.expand();
-
 // Константы для рангов
 const RANKS = {
     0: { name: 'Новичок', color: '#808080' },
