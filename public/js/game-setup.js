@@ -116,13 +116,13 @@ class GameSetup {
         // Обновляем визуальное состояние столов
         this.elements.tableOptions.forEach(table => {
             const tablePlayers = parseInt(table.getAttribute('data-players'));
+            const tableOval = table.querySelector('.table-oval');
             if (tablePlayers === players) {
-                table.classList.add('active');
-                // Добавляем анимацию выбора
-                table.querySelector('.table-oval').style.transform = 'scale(0.85) scaleX(1.5)';
+                if (table) table.classList.add('active');
+                if (tableOval) tableOval.style.transform = 'scale(0.85) scaleX(1.5)';
             } else {
-                table.classList.remove('active');
-                table.querySelector('.table-oval').style.transform = 'scale(0.8) scaleX(1.5)';
+                if (table) table.classList.remove('active');
+                if (tableOval) tableOval.style.transform = 'scale(0.8) scaleX(1.5)';
             }
         });
 
@@ -132,8 +132,8 @@ class GameSetup {
     selectMode(mode) {
         this.settings.gameMode = mode;
         this.elements.modeCards.forEach(card => {
-            card.classList.remove('active');
-            if (card.getAttribute('data-mode') === mode) {
+            if (card) card.classList.remove('active');
+            if (card && card.getAttribute('data-mode') === mode) {
                 card.classList.add('active');
             }
         });

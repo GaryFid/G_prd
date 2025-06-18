@@ -10,6 +10,7 @@ const { initDatabase, User } = require('./models');
 const logger = require('./utils/logger');
 const { Pool } = require('pg');
 const pgSession = require('connect-pg-simple')(expressSession);
+const gameSettingsRouter = require('./src/api/gameSettings');
 
 // Импорт сцен и обработчиков
 const { authScene } = require('./scenes/auth');
@@ -188,6 +189,7 @@ async function startApp() {
     // Маршруты
     app.use('/auth', require('./routes/auth'));
     app.use('/api', require('./routes/api'));
+    app.use('/api/settings', gameSettingsRouter);
 
     // Основные маршруты для веб-приложения
     app.get('/', (req, res) => {
