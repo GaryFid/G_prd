@@ -46,6 +46,7 @@ router.post('/telegram-auth', async (req, res) => {
     // Устанавливаем сессию
     req.session.userId = user.id;
     req.session.telegramId = id;
+    req.session.telegramUsername = username || null;
 
     res.json({
       success: true,
@@ -53,6 +54,7 @@ router.post('/telegram-auth', async (req, res) => {
         id: user.id,
         telegramId: user.telegramId,
         username: user.username,
+        telegramUsername: username || null,
         firstName: user.firstName,
         lastName: user.lastName,
         photoUrl: user.photoUrl,
@@ -72,12 +74,12 @@ router.post('/telegram-auth', async (req, res) => {
 
 // Проверка текущей сессии
 router.get('/telegram/check', (req, res) => {
-  if (req.session.userId && req.session.telegramId) {
+  if (req.session.userId && req.session.telegramUsername) {
     res.json({
       success: true,
       user: {
         id: req.session.userId,
-        telegramId: req.session.telegramId
+        username: req.session.telegramUsername
       }
     });
   } else {

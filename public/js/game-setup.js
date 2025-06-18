@@ -177,13 +177,16 @@ async function createTable() {
         // Получаем имя игрока (из Telegram WebApp или localStorage)
         let playerName = 'Игрок';
         let playerId = null;
+        let tgUsername = null;
         if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
             playerName = Telegram.WebApp.initDataUnsafe.first_name || Telegram.WebApp.initDataUnsafe.username || 'Игрок';
             playerId = Telegram.WebApp.initDataUnsafe.user?.id || null;
+            tgUsername = Telegram.WebApp.initDataUnsafe.username || null;
         } else if (localStorage.getItem('user')) {
             const user = JSON.parse(localStorage.getItem('user'));
             playerName = user.first_name || user.username || 'Игрок';
             playerId = user.id || null;
+            tgUsername = user.username || null;
         }
         // Получаем выбранное количество игроков
         let playerCount = 4;
@@ -193,16 +196,18 @@ async function createTable() {
         }
         // Генерируем уникальный roomId
         const roomId = Math.random().toString(36).substr(2, 9);
+        // Используем username с @, если есть
+        let hostName = tgUsername ? `@${tgUsername}` : playerName;
         // Запрос на создание комнаты
         const res = await fetch('/api/settings/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
                 roomId,
                 maxPlayers: playerCount,
                 minPlayers: playerCount,
-                hostId: playerId || roomId,
-                hostName: playerName
+                hostName
             })
         });
         const data = await res.json();

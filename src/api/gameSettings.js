@@ -2,8 +2,15 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 
+const checkAuth = (req, res, next) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ error: 'Необходима авторизация' });
+    }
+    next();
+};
+
 // Получение настроек игры
-router.get('/:roomId', async (req, res) => {
+router.get('/:roomId', checkAuth, async (req, res) => {
     try {
         const { roomId } = req.params;
         const result = await db.query(
@@ -36,9 +43,10 @@ router.get('/:roomId', async (req, res) => {
 });
 
 // Создание новой комнаты
-router.post('/create', async (req, res) => {
+router.post('/create', checkAuth, async (req, res) => {
     try {
-        const { roomId, maxPlayers, minPlayers, hostId, hostName } = req.body;
+        const hostId = req.session.userId;
+        const { roomId, maxPlayers, minPlayers, hostName } = req.body;
 
         // Валидация
         if (maxPlayers < 4 || maxPlayers > 9) {
@@ -68,10 +76,17 @@ router.post('/create', async (req, res) => {
 });
 
 // Обновление количества игроков
-router.patch('/:roomId/players', async (req, res) => {
+router.patch('/:roomId/players', checkAuth, async (req, res) => {
     try {
         const { roomId } = req.params;
-        const { playerId, playerName, isBot } = req.body;
+        const playerId = req.session.userId;
+        let { playerName, isBot } = req.body;
+
+        // Получаем username из сессии, если есть
+        const tgUsername = req.session.telegramUsername;
+        if (tgUsername) {
+            playerName = `@${tgUsername}`;
+        }
 
         // Проверяем существование комнаты
         const roomResult = await db.query(
@@ -81,6 +96,15 @@ router.patch('/:roomId/players', async (req, res) => {
 
         if (roomResult.rows.length === 0) {
             return res.status(404).json({ error: 'Комната не найдена' });
+        }
+
+        // Проверяем, не присоединился ли уже этот игрок
+        const existsResult = await db.query(
+            'SELECT * FROM players WHERE room_id = $1 AND player_id = $2',
+            [roomId, playerId]
+        );
+        if (existsResult.rows.length > 0) {
+            return res.status(400).json({ error: 'Игрок уже в комнате' });
         }
 
         // Получаем текущее количество игроков
@@ -116,7 +140,7 @@ router.patch('/:roomId/players', async (req, res) => {
 });
 
 // Новый эндпоинт для получения состояния комнаты
-router.get('/room/:roomId', async (req, res) => {
+router.get('/room/:roomId', checkAuth, async (req, res) => {
     try {
         const { roomId } = req.params;
         // Получаем игроков
@@ -143,7 +167,7 @@ router.get('/room/:roomId', async (req, res) => {
 });
 
 // Эндпоинт для получения списка всех комнат
-router.get('/rooms', async (req, res) => {
+router.get('/rooms', checkAuth, async (req, res) => {
     try {
         const result = await db.query(
             `SELECT room_id, max_players, min_players, status, 

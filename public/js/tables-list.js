@@ -34,22 +34,24 @@ async function joinTable(roomId) {
     try {
         // Получаем имя игрока (из Telegram WebApp или localStorage)
         let playerName = 'Игрок';
-        let playerId = null;
+        let tgUsername = null;
         if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
-            playerName = Telegram.WebApp.initDataUnsafe.first_name || Telegram.WebApp.initDataUnsafe.username || 'Игрок';
-            playerId = Telegram.WebApp.initDataUnsafe.user?.id || null;
+            playerName = window.Telegram.WebApp.initDataUnsafe.first_name || window.Telegram.WebApp.initDataUnsafe.username || 'Игрок';
+            tgUsername = window.Telegram.WebApp.initDataUnsafe.username || null;
         } else if (localStorage.getItem('user')) {
             const user = JSON.parse(localStorage.getItem('user'));
             playerName = user.first_name || user.username || 'Игрок';
-            playerId = user.id || null;
+            tgUsername = user.username || null;
         }
+        // Используем username с @, если есть
+        let finalName = tgUsername ? `@${tgUsername}` : playerName;
         // Запрос на добавление игрока
         const res = await fetch(`/api/settings/${roomId}/players`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
-                playerId: playerId || Math.random().toString(36).substr(2, 9),
-                playerName,
+                playerName: finalName,
                 isBot: false
             })
         });
