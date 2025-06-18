@@ -263,6 +263,8 @@ async function startApp() {
         req.session.userId = user.id;
         req.session.telegramUsername = username;
         req.session.save(() => {
+          console.log('AFTER AUTH SESSION:', req.session);
+          console.log('SET-COOKIE HEADER:', res.getHeader('Set-Cookie'));
           res.json({ success: true, user: user.toPublicJSON() });
         });
       } catch (error) {
