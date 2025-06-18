@@ -120,6 +120,15 @@ async function initBot() {
   }
 }
 
+// Middleware для проверки авторизации с логированием сессии
+function checkAuth(req, res, next) {
+  console.log('SESSION:', req.session);
+  if (!req.session.userId) {
+    return res.status(401).json({ success: false, message: 'Необходима авторизация' });
+  }
+  next();
+}
+
 // Асинхронная функция запуска приложения
 async function startApp() {
   try {
