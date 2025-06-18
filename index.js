@@ -187,9 +187,11 @@ async function startApp() {
       cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
         secure: true, // обязательно true для Render/HTTPS
-        sameSite: 'lax', // или 'none' если фронт и бэк на разных поддоменах
+        sameSite: 'none', // для кросс-домена (Telegram WebApp)
         path: '/', // cookie виден на всех путях
         httpOnly: true // защита от XSS
+        // Для локального теста:
+        // secure: false, sameSite: 'lax'
       }
     }));
 
