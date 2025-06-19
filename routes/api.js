@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { Game, User } = require('../models');
 const logger = require('../utils/logger');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey';
 
 // Логирующий checkAuth
 function checkAuth(req, res, next) {
@@ -321,11 +323,25 @@ router.post('/add-bot', checkAuth, checkGame, async (req, res) => {
     }
 });
 
-// --- Эндпоинт для профиля пользователя ---
-router.get('/user/profile', checkAuth, async (req, res) => {
+function checkJWT(req, res, next) {
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith('Bearer ')) {
+        return res.status(401).json({ success: false, message: 'Необходима авторизация (токен)' });
+    }
+    const token = auth.split(' ')[1];
     try {
-        // Заглушка: возвращаем тестовые данные
-        const user = await User.findByPk(req.session.userId);
+        const payload = jwt.verify(token, JWT_SECRET);
+        req.userId = payload.userId;
+        next();
+    } catch (e) {
+        return res.status(401).json({ success: false, message: 'Неверный или истёкший токен' });
+    }
+}
+
+// --- Эндпоинт для профиля пользователя ---
+router.get('/user/profile', checkJWT, async (req, res) => {
+    try {
+        const user = await User.findByPk(req.userId);
         res.json({
             success: true,
             user: {
@@ -356,9 +372,8 @@ router.get('/user/profile', checkAuth, async (req, res) => {
 });
 
 // --- Эндпоинт для последних игр пользователя ---
-router.get('/user/recent-games', checkAuth, async (req, res) => {
+router.get('/user/recent-games', checkJWT, async (req, res) => {
     try {
-        // Заглушка: возвращаем тестовые данные
         res.json({
             success: true,
             games: [

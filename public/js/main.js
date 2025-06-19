@@ -14,7 +14,7 @@ if (tg && tg.themeParams) {
 async function loadUserData() {
     try {
         const response = await fetch('/api/user/profile', {
-            credentials: 'include'
+            headers: getAuthHeaders()
         });
         const data = await response.json();
         
@@ -98,7 +98,7 @@ function updateGameHistory(history = []) {
 async function loadRecentGames() {
     try {
         const response = await fetch('/api/user/recent-games', {
-            credentials: 'include'
+            headers: getAuthHeaders()
         });
         const data = await response.json();
         

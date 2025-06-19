@@ -40,7 +40,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const noTablesEl = document.getElementById('no-tables');
     try {
         // Получаем список комнат с сервера
-        const res = await fetch('/api/settings/rooms');
+        const res = await fetch('/api/settings/rooms', { headers: getAuthHeaders() });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Ошибка получения списка столов');
         if (!data.rooms || data.rooms.length === 0) {
@@ -91,8 +91,7 @@ async function joinTable(roomId) {
         // Запрос на добавление игрока
         const res = await fetch(`/api/settings/${roomId}/players`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
+            headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify({
                 playerName: finalName,
                 isBot: false

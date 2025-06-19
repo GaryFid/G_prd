@@ -121,7 +121,7 @@ function updatePlayerSlot(slot, player) {
 // Загрузка настроек игры
 async function loadGameSettings() {
     try {
-        const response = await fetch(`/api/settings/${gameState.roomId}`);
+        const response = await fetch(`/api/settings/${gameState.roomId}`, { headers: getAuthHeaders() });
         if (!response.ok) throw new Error('Failed to fetch game settings');
         
         const settings = await response.json();
@@ -225,7 +225,7 @@ function showNotification(message, type = 'info') {
 // Обновление состояния комнаты
 async function updateRoom() {
     try {
-        const response = await fetch(`/api/room/${gameState.roomId}`);
+        const response = await fetch(`/api/room/${gameState.roomId}`, { headers: getAuthHeaders() });
         if (!response.ok) throw new Error('Failed to fetch room state');
 
         const roomState = await response.json();

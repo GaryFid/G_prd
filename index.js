@@ -12,6 +12,8 @@ const { Pool } = require('pg');
 const pgSession = require('connect-pg-simple')(expressSession);
 const gameSettingsRouter = require('./src/api/gameSettings');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey';
 
 // Импорт сцен и обработчиков
 const { authScene } = require('./scenes/auth');
@@ -262,13 +264,9 @@ async function startApp() {
           if (user.avatar !== photo_url) { user.avatar = photo_url; changed = true; }
           if (changed) await user.save();
         }
-        req.session.userId = user.id;
-        req.session.telegramUsername = username;
-        req.session.save(() => {
-          console.log('AFTER AUTH SESSION:', req.session);
-          console.log('SET-COOKIE HEADER:', res.getHeader('Set-Cookie'));
-          res.json({ success: true, user: user.toPublicJSON() });
-        });
+        // Генерируем JWT
+        const token = jwt.sign({ userId: user.id, telegramId: user.telegramId }, JWT_SECRET, { expiresIn: '30d' });
+        res.json({ success: true, token, user: user.toPublicJSON() });
       } catch (error) {
         console.error('Ошибка в /api/telegram-auth:', error);
         res.status(500).json({ success: false, message: 'Ошибка сервера' });

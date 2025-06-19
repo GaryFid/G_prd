@@ -246,8 +246,7 @@ async function createTable() {
         // Запрос на создание комнаты
         const res = await fetch('/api/settings/create', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
+            headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify({
                 roomId,
                 maxPlayers: playerCount,

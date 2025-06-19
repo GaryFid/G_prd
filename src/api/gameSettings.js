@@ -1,18 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey';
 
-// Логирующий checkAuth
-function checkAuth(req, res, next) {
-    console.log('SESSION:', req.session);
-    if (!req.session.userId) {
-        return res.status(401).json({ error: 'Необходима авторизация' });
+// JWT middleware
+function checkJWT(req, res, next) {
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Необходима авторизация (токен)' });
     }
-    next();
+    const token = auth.split(' ')[1];
+    try {
+        const payload = jwt.verify(token, JWT_SECRET);
+        req.userId = payload.userId;
+        next();
+    } catch (e) {
+        return res.status(401).json({ error: 'Неверный или истёкший токен' });
+    }
 }
 
 // Получение настроек игры
-router.get('/:roomId', checkAuth, async (req, res) => {
+router.get('/:roomId', checkJWT, async (req, res) => {
     try {
         const { roomId } = req.params;
         const result = await db.query(
@@ -45,9 +54,9 @@ router.get('/:roomId', checkAuth, async (req, res) => {
 });
 
 // Создание новой комнаты
-router.post('/create', checkAuth, async (req, res) => {
+router.post('/create', checkJWT, async (req, res) => {
     try {
-        const hostId = req.session.userId;
+        const hostId = req.userId;
         const { roomId, maxPlayers, minPlayers, hostName } = req.body;
 
         // Валидация
@@ -78,10 +87,10 @@ router.post('/create', checkAuth, async (req, res) => {
 });
 
 // Обновление количества игроков
-router.patch('/:roomId/players', checkAuth, async (req, res) => {
+router.patch('/:roomId/players', checkJWT, async (req, res) => {
     try {
         const { roomId } = req.params;
-        const playerId = req.session.userId;
+        const playerId = req.userId;
         let { playerName, isBot } = req.body;
 
         // Получаем username из сессии, если есть
@@ -142,7 +151,7 @@ router.patch('/:roomId/players', checkAuth, async (req, res) => {
 });
 
 // Новый эндпоинт для получения состояния комнаты
-router.get('/room/:roomId', checkAuth, async (req, res) => {
+router.get('/room/:roomId', checkJWT, async (req, res) => {
     try {
         const { roomId } = req.params;
         // Получаем игроков
@@ -169,7 +178,7 @@ router.get('/room/:roomId', checkAuth, async (req, res) => {
 });
 
 // Эндпоинт для получения списка всех комнат
-router.get('/rooms', checkAuth, async (req, res) => {
+router.get('/rooms', checkJWT, async (req, res) => {
     try {
         const result = await db.query(
             `SELECT room_id, max_players, min_players, status, 
