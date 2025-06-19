@@ -210,15 +210,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 // === Глобальные функции для кнопок ===
 async function createTable() {
     try {
-        // 1. Проверяем, авторизован ли пользователь через /api/me
-        const meRes = await fetch('/api/me', { credentials: 'include' });
-        if (!meRes.ok) {
-            // Если не авторизован — инициируем Telegram-авторизацию
-            await ensureTelegramAuth();
-            // После авторизации повторяем проверку
-            const meRes2 = await fetch('/api/me', { credentials: 'include' });
-            if (!meRes2.ok) throw new Error('Не удалось авторизоваться через Telegram');
-        }
         // Получаем имя игрока (из Telegram WebApp или localStorage)
         let playerName = 'Игрок';
         let playerId = null;
@@ -244,7 +235,7 @@ async function createTable() {
         // Используем username с @, если есть
         let hostName = tgUsername ? `@${tgUsername}` : playerName;
         // Запрос на создание комнаты
-        const res = await fetch('/api/settings/create', {
+        const res = await autoReauthOn401(() => fetch('/api/settings/create', {
             method: 'POST',
             headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify({
@@ -253,7 +244,7 @@ async function createTable() {
                 minPlayers: playerCount,
                 hostName
             })
-        });
+        }));
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Ошибка создания стола');
         // Сохраняем roomId и роль хоста

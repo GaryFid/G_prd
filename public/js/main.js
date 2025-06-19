@@ -13,9 +13,7 @@ if (tg && tg.themeParams) {
 // Загрузка данных пользователя
 async function loadUserData() {
     try {
-        const response = await fetch('/api/user/profile', {
-            headers: getAuthHeaders()
-        });
+        const response = await autoReauthOn401(() => fetch('/api/user/profile', { headers: getAuthHeaders() }));
         const data = await response.json();
         
         if (data.success && data.user) {
@@ -97,9 +95,7 @@ function updateGameHistory(history = []) {
 // Загрузка последних игр
 async function loadRecentGames() {
     try {
-        const response = await fetch('/api/user/recent-games', {
-            headers: getAuthHeaders()
-        });
+        const response = await autoReauthOn401(() => fetch('/api/user/recent-games', { headers: getAuthHeaders() }));
         const data = await response.json();
         
         if (data.success && data.games) {

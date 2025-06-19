@@ -2,43 +2,37 @@
 
 // Загрузка данных профиля
 async function loadProfile() {
-    try {
-        const response = await fetch('/api/user/profile', {
-            credentials: 'include'
-        });
-        const data = await response.json();
+    const response = await autoReauthOn401(() => fetch('/api/user/profile', { headers: getAuthHeaders() }));
+    const data = await response.json();
+    
+    if (data.success && data.user) {
+        // Обновляем основную информацию
+        document.querySelector('.profile-avatar').src = data.user.photo_url || 'img/default-avatar.png';
+        document.querySelector('.profile-name').textContent = data.user.username || 'Игрок';
+        document.querySelector('.profile-id').textContent = `ID: ${data.user.id}`;
+        document.querySelector('.profile-balance').textContent = `${data.user.coins || 0} монет`;
         
-        if (data.success && data.user) {
-            // Обновляем основную информацию
-            document.querySelector('.profile-avatar').src = data.user.photo_url || 'img/default-avatar.png';
-            document.querySelector('.profile-name').textContent = data.user.username || 'Игрок';
-            document.querySelector('.profile-id').textContent = `ID: ${data.user.id}`;
-            document.querySelector('.profile-balance').textContent = `${data.user.coins || 0} монет`;
-            
-            // Обновляем статистику
-            const stats = data.user.stats || {};
-            document.querySelector('.stats-item:nth-child(1) .stats-value').textContent = stats.gamesPlayed || '0';
-            document.querySelector('.stats-item:nth-child(2) .stats-value').textContent = stats.gamesWon || '0';
-            document.querySelector('.stats-item:nth-child(3) .stats-value').textContent = stats.rating || '0';
-            
-            // Обновляем достижения
-            const achievements = data.user.achievements || [];
-            const achievementsContainer = document.querySelector('.achievements-list');
-            achievementsContainer.innerHTML = achievements.map(achievement => `
-                <div class="achievement-item ${achievement.unlocked ? 'unlocked' : ''}">
-                    <div class="achievement-icon">${achievement.icon}</div>
-                    <div class="achievement-info">
-                        <div class="achievement-name">${achievement.name}</div>
-                        <div class="achievement-description">${achievement.description}</div>
-                    </div>
+        // Обновляем статистику
+        const stats = data.user.stats || {};
+        document.querySelector('.stats-item:nth-child(1) .stats-value').textContent = stats.gamesPlayed || '0';
+        document.querySelector('.stats-item:nth-child(2) .stats-value').textContent = stats.gamesWon || '0';
+        document.querySelector('.stats-item:nth-child(3) .stats-value').textContent = stats.rating || '0';
+        
+        // Обновляем достижения
+        const achievements = data.user.achievements || [];
+        const achievementsContainer = document.querySelector('.achievements-list');
+        achievementsContainer.innerHTML = achievements.map(achievement => `
+            <div class="achievement-item ${achievement.unlocked ? 'unlocked' : ''}">
+                <div class="achievement-icon">${achievement.icon}</div>
+                <div class="achievement-info">
+                    <div class="achievement-name">${achievement.name}</div>
+                    <div class="achievement-description">${achievement.description}</div>
                 </div>
-            `).join('');
-            
-            // Обновляем историю игр
-            loadGameHistory();
-        }
-    } catch (error) {
-        console.error('Ошибка при загрузке профиля:', error);
+            </div>
+        `).join('');
+        
+        // Обновляем историю игр
+        loadGameHistory();
     }
 }
 

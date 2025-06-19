@@ -40,7 +40,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const noTablesEl = document.getElementById('no-tables');
     try {
         // Получаем список комнат с сервера
-        const res = await fetch('/api/settings/rooms', { headers: getAuthHeaders() });
+        const res = await autoReauthOn401(() => fetch('/api/settings/rooms', { headers: getAuthHeaders() }));
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Ошибка получения списка столов');
         if (!data.rooms || data.rooms.length === 0) {
@@ -68,13 +68,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 async function joinTable(roomId) {
     try {
-        // Проверяем авторизацию пользователя
-        const meRes = await fetch('/api/me', { credentials: 'include' });
-        if (!meRes.ok) {
-            await ensureTelegramAuth();
-            const meRes2 = await fetch('/api/me', { credentials: 'include' });
-            if (!meRes2.ok) throw new Error('Не удалось авторизоваться через Telegram');
-        }
         // Получаем имя игрока (из Telegram WebApp или localStorage)
         let playerName = 'Игрок';
         let tgUsername = null;
@@ -89,14 +82,14 @@ async function joinTable(roomId) {
         // Используем username с @, если есть
         let finalName = tgUsername ? `@${tgUsername}` : playerName;
         // Запрос на добавление игрока
-        const res = await fetch(`/api/settings/${roomId}/players`, {
+        const res = await autoReauthOn401(() => fetch(`/api/settings/${roomId}/players`, {
             method: 'PATCH',
             headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify({
                 playerName: finalName,
                 isBot: false
             })
-        });
+        }));
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Ошибка присоединения');
         // Сохраняем roomId и роль гостя

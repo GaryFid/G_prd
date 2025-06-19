@@ -23,14 +23,7 @@ async function ensureTelegramAuth() {
         alert('Ошибка авторизации: ' + (data.message || ''));
         throw new Error('Telegram auth failed');
     }
-    // Сохраняем токен в localStorage
     localStorage.setItem('jwtToken', data.token);
-    // Проверяем, что сессия реально установлена
-    const profileRes = await fetch('/api/me', { credentials: 'include' });
-    if (!profileRes.ok) {
-        alert('Ошибка: сессия не установлена. Попробуйте перезагрузить страницу.');
-        throw new Error('Session not established');
-    }
 }
 
 // Получить заголовки авторизации для fetch
@@ -40,4 +33,14 @@ function getAuthHeaders(extra = {}) {
         ...extra,
         Authorization: token ? `Bearer ${token}` : ''
     };
+}
+
+// Автоматическая повторная авторизация при 401
+async function autoReauthOn401(fetchFn) {
+    let response = await fetchFn();
+    if (response.status === 401) {
+        await ensureTelegramAuth();
+        response = await fetchFn();
+    }
+    return response;
 } 
