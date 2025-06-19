@@ -30,15 +30,11 @@ async function ensureTelegramAuth() {
 
 // Загрузка и отображение списка столов
 window.addEventListener('DOMContentLoaded', async () => {
-    // Проверяем авторизацию пользователя
-    const meRes = await fetch('/api/me', { credentials: 'include' });
-    if (!meRes.ok) {
+    try {
         await ensureTelegramAuth();
-        const meRes2 = await fetch('/api/me', { credentials: 'include' });
-        if (!meRes2.ok) {
-            alert('Не удалось авторизоваться через Telegram');
-            return;
-        }
+    } catch (e) {
+        alert('Ошибка авторизации: ' + e.message);
+        return;
     }
     const listEl = document.getElementById('tables-list');
     const noTablesEl = document.getElementById('no-tables');

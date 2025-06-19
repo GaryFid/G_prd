@@ -265,13 +265,7 @@ async function updateRoom() {
 // Инициализация
 async function init() {
     try {
-        // Проверяем авторизацию пользователя
-        const meRes = await fetch('/api/me', { credentials: 'include' });
-        if (!meRes.ok) {
-            await ensureTelegramAuth();
-            const meRes2 = await fetch('/api/me', { credentials: 'include' });
-            if (!meRes2.ok) throw new Error('Не удалось авторизоваться через Telegram');
-        }
+        await ensureTelegramAuth();
         // Получаем roomId из URL или Telegram WebApp
         const urlParams = new URLSearchParams(window.location.search);
         gameState.roomId = urlParams.get('roomId') || tg.initDataUnsafe?.start_param;

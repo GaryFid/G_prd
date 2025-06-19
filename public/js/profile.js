@@ -97,7 +97,13 @@ function formatDate(dateString) {
 }
 
 // Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await ensureTelegramAuth();
+    } catch (e) {
+        alert('Ошибка авторизации: ' + e.message);
+        return;
+    }
     loadProfile();
     
     // Обработчики для вкладок

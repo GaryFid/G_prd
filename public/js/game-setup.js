@@ -198,7 +198,12 @@ async function ensureTelegramAuth() {
 
 // Создаем экземпляр класса при загрузке страницы
 document.addEventListener('DOMContentLoaded', async () => {
-    await ensureTelegramAuth();
+    try {
+        await ensureTelegramAuth();
+    } catch (e) {
+        alert('Ошибка авторизации: ' + e.message);
+        return;
+    }
     new GameSetup();
 });
 
