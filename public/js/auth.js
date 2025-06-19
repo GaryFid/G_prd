@@ -1,5 +1,13 @@
 // === Универсальная авторизация через Telegram WebApp ===
 async function ensureTelegramAuth() {
+    // Проверка токена при старте
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+        // Проверяем валидность токена через дешёвый запрос (например, профиль)
+        const res = await fetch('/api/user/profile', { headers: getAuthHeaders() });
+        if (res.status !== 401) return; // Токен валиден, ничего не делаем
+        // Если 401 — токен невалиден, продолжаем авторизацию
+    }
     if (!window.Telegram || !window.Telegram.WebApp) {
         throw new Error('Открывайте игру только через Telegram WebApp!');
     }
@@ -41,6 +49,20 @@ async function autoReauthOn401(fetchFn) {
     if (response.status === 401) {
         await ensureTelegramAuth();
         response = await fetchFn();
+        if (response.status === 401) {
+            alert('Ошибка авторизации. Перезапустите WebApp.');
+            logout();
+            throw new Error('Unauthorized');
+        }
+    }
+    if (response.status === 500) {
+        alert('Ошибка сервера. Попробуйте позже.');
+        throw new Error('Server error');
     }
     return response;
+}
+
+function logout() {
+    localStorage.removeItem('jwtToken');
+    location.reload();
 } 
