@@ -321,4 +321,55 @@ router.post('/add-bot', checkAuth, checkGame, async (req, res) => {
     }
 });
 
+// --- Эндпоинт для профиля пользователя ---
+router.get('/user/profile', checkAuth, async (req, res) => {
+    try {
+        // Заглушка: возвращаем тестовые данные
+        const user = await User.findByPk(req.session.userId);
+        res.json({
+            success: true,
+            user: {
+                id: user?.id || 1,
+                username: user?.username || 'Игрок',
+                photo_url: user?.avatar || '/img/player-avatar.svg',
+                coins: user?.coins || 1000,
+                stats: {
+                    gamesPlayed: user?.gamesPlayed || 42,
+                    winRate: user?.winRate || 65,
+                    rating: user?.rating || 1234
+                },
+                achievements: [
+                    { id: 'first_win', title: 'Первая победа', progress: 100, icon: '🏆' },
+                    { id: 'games_10', title: '10 игр', progress: 80, icon: '🎮' },
+                    { id: 'pro', title: 'Профессионал', progress: 60, icon: '⭐' }
+                ],
+                gameHistory: [
+                    { id: 42, result: 'win', title: 'Игра #42' },
+                    { id: 41, result: 'lose', title: 'Игра #41' },
+                    { id: 40, result: 'win', title: 'Игра #40' }
+                ]
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Ошибка получения профиля' });
+    }
+});
+
+// --- Эндпоинт для последних игр пользователя ---
+router.get('/user/recent-games', checkAuth, async (req, res) => {
+    try {
+        // Заглушка: возвращаем тестовые данные
+        res.json({
+            success: true,
+            games: [
+                { id: 42, result: 'win', date: new Date(), points: 50 },
+                { id: 41, result: 'lose', date: new Date(Date.now() - 86400000), points: -20 },
+                { id: 40, result: 'win', date: new Date(Date.now() - 2*86400000), points: 30 }
+            ]
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Ошибка получения последних игр' });
+    }
+});
+
 module.exports = router; 
