@@ -205,6 +205,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 // === Глобальные функции для кнопок ===
 async function createTable() {
     try {
+        // 1. Проверяем, авторизован ли пользователь через /api/me
+        const meRes = await fetch('/api/me', { credentials: 'include' });
+        if (!meRes.ok) {
+            // Если не авторизован — инициируем Telegram-авторизацию
+            await ensureTelegramAuth();
+            // После авторизации повторяем проверку
+            const meRes2 = await fetch('/api/me', { credentials: 'include' });
+            if (!meRes2.ok) throw new Error('Не удалось авторизоваться через Telegram');
+        }
         // Получаем имя игрока (из Telegram WebApp или localStorage)
         let playerName = 'Игрок';
         let playerId = null;

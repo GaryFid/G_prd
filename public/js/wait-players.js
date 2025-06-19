@@ -232,9 +232,46 @@ async function updateRoom() {
     }
 }
 
+// === Авторизация через Telegram WebApp ===
+async function ensureTelegramAuth() {
+    if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
+        const user = Telegram.WebApp.initDataUnsafe.user;
+        const res = await fetch('/api/telegram-auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                id: user.id,
+                username: user.username,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                photo_url: user.photo_url
+            })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            alert('Ошибка авторизации: ' + (data.message || ''));
+            throw new Error('Telegram auth failed');
+        }
+        // Жёстко проверяем, что сессия реально установлена
+        const profileRes = await fetch('/api/me', { credentials: 'include' });
+        if (!profileRes.ok) {
+            alert('Ошибка: сессия не установлена. Попробуйте перезагрузить страницу.');
+            throw new Error('Session not established');
+        }
+    }
+}
+
 // Инициализация
 async function init() {
     try {
+        // Проверяем авторизацию пользователя
+        const meRes = await fetch('/api/me', { credentials: 'include' });
+        if (!meRes.ok) {
+            await ensureTelegramAuth();
+            const meRes2 = await fetch('/api/me', { credentials: 'include' });
+            if (!meRes2.ok) throw new Error('Не удалось авторизоваться через Telegram');
+        }
         // Получаем roomId из URL или Telegram WebApp
         const urlParams = new URLSearchParams(window.location.search);
         gameState.roomId = urlParams.get('roomId') || tg.initDataUnsafe?.start_param;

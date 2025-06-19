@@ -1,5 +1,15 @@
 // Загрузка и отображение списка столов
 window.addEventListener('DOMContentLoaded', async () => {
+    // Проверяем авторизацию пользователя
+    const meRes = await fetch('/api/me', { credentials: 'include' });
+    if (!meRes.ok) {
+        await ensureTelegramAuth();
+        const meRes2 = await fetch('/api/me', { credentials: 'include' });
+        if (!meRes2.ok) {
+            alert('Не удалось авторизоваться через Telegram');
+            return;
+        }
+    }
     const listEl = document.getElementById('tables-list');
     const noTablesEl = document.getElementById('no-tables');
     try {
@@ -32,6 +42,13 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 async function joinTable(roomId) {
     try {
+        // Проверяем авторизацию пользователя
+        const meRes = await fetch('/api/me', { credentials: 'include' });
+        if (!meRes.ok) {
+            await ensureTelegramAuth();
+            const meRes2 = await fetch('/api/me', { credentials: 'include' });
+            if (!meRes2.ok) throw new Error('Не удалось авторизоваться через Telegram');
+        }
         // Получаем имя игрока (из Telegram WebApp или localStorage)
         let playerName = 'Игрок';
         let tgUsername = null;

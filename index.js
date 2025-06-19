@@ -275,6 +275,14 @@ async function startApp() {
       }
     });
 
+    // Новый эндпоинт для проверки авторизации
+    app.get('/api/me', (req, res) => {
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false });
+      }
+      res.json({ success: true, userId: req.session.userId });
+    });
+
     // Запуск сервера СРАЗУ, до запуска бота
     console.log('Готов к запуску сервера, сейчас будет listen...');
     app.listen(PORT, '0.0.0.0', () => {
