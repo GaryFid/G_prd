@@ -191,11 +191,11 @@ document.getElementById('profile-page-btn')?.addEventListener('click', function(
     window.location.href = '/profile.html';
 });
 
-document.getElementById('rules').addEventListener('click', function() {
+document.getElementById('rules')?.addEventListener('click', function() {
     window.showModal('Правила', '<p>Правила игры будут здесь.</p>');
 });
 
-document.getElementById('rating').addEventListener('click', function() {
+document.getElementById('rating')?.addEventListener('click', function() {
     window.showToast('Рейтинг игроков будет доступен в ближайшее время!', 'info');
 });
 

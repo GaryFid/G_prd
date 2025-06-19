@@ -1,3 +1,6 @@
+// Безопасное определение tg
+const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+
 // Основные настройки
 tg.expand(); // Раскрываем на весь экран
 tg.enableClosingConfirmation(); // Подтверждение закрытия
